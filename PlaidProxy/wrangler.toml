@@ -1,0 +1,21 @@
+name = "harbor-plaid-proxy"
+main = "src/worker.js"
+compatibility_date = "2026-01-01"
+
+[[kv_namespaces]]
+binding = "ITEMS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
+
+# Set secrets with:
+#   wrangler secret put PLAID_CLIENT_ID
+#   wrangler secret put PLAID_SECRET
+#   wrangler secret put PROXY_API_KEY
+#
+# Optional vars in [vars]:
+#   PLAID_ENV = "sandbox"
+#   PLAID_REDIRECT_URI = "https://harbor-plaid-proxy.<you>.workers.dev/plaid/oauth"
+#   IOS_APP_ID = "TEAMID.me.durocodes.Harbor"
+
+[vars]
+PLAID_ENV = "sandbox"

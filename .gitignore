@@ -1,0 +1,90 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors / AI
+.idea/
+.vscode/
+*.swp
+*~
+.claude/
+.cursor/
+*.code-workspace
+
+# Xcode
+DerivedData/
+build/
+Build/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+*.xcarchive
+*.app
+!**/Assets.xcassets/**
+
+# Swift Package Manager
+.build/
+.swiftpm/configuration/
+.swiftpm/xcode/
+Packages/
+Package.pins
+# Keep Package.resolved when using SPM deps so builds are reproducible
+# Package.resolved
+
+# CocoaPods / Carthage (if added later)
+Pods/
+Carthage/Build/
+
+# Secrets — never commit
+Config.local.plist
+*.pem
+*.p12
+*.mobileprovision
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Plaid proxy
+PlaidProxy/.dev.vars
+PlaidProxy/node_modules/
+PlaidProxy/dist/
+PlaidProxy/.wrangler/
+PlaidProxy/.mf/
+
+# Node / Expo (future app/ or apps/expo branch)
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.*
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+*.jks
+*.keystore
+android/app/build/
+ios/Pods/
+ios/build/
+
+# Logs / coverage / misc
+*.log
+coverage/
+*.lcov
+tmp/
+.temp/
