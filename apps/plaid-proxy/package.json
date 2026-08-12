@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "dev": "bash -c 'wrangler dev --config \"$(test -f wrangler.local.toml && echo wrangler.local.toml || echo wrangler.toml)\"'",
+    "deploy": "bash -c 'wrangler deploy --config \"$(test -f wrangler.local.toml && echo wrangler.local.toml || echo wrangler.toml)\"'",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

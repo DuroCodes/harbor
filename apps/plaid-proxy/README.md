@@ -41,12 +41,15 @@ bun run dev
 
 ```bash
 bunx wrangler kv namespace create ITEMS
-# paste the ids into wrangler.toml
+
+# keep your real kv id out of git — copy the template and edit locally
+cp wrangler.toml wrangler.local.toml
+# paste the id into wrangler.local.toml (gitignored)
 
 bunx wrangler secret put PLAID_CLIENT_ID
 bunx wrangler secret put PLAID_SECRET
 bunx wrangler secret put PROXY_API_KEY
-bun run deploy
+bun run deploy   # uses wrangler.local.toml when present
 ```
 
 ## endpoints

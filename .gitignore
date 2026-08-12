@@ -72,6 +72,9 @@ Carthage/Build/
 # Cloudflare Workers
 .wrangler/
 .mf/
+**/wrangler.local.toml
+**/wrangler.local.json
+**/wrangler.local.jsonc
 
 # Logs / coverage / misc
 *.log
