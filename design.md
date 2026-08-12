@@ -1,30 +1,22 @@
-# Harbor · Design System
+# harbor · design
 
-/* Hallmark · genre: modern-minimal · theme: custom Harbor dark
- * accent: harbor-teal · paper: true-black
- * display: SF Pro · body: SF Pro · amounts: SF Pro (monospaced digits)
- * mark: SF Symbol `anchor` · home tab: `house`
- */
+forced dark. teal accent. oversized balances, muted labels.
 
-## Brand
+## brand
 
-| Token | Value |
-| --- | --- |
-| Name | Harbor |
-| Mark | `anchor` (titles / empty states) |
-| Home tab | `house` (outline) |
-| Tagline | All accounts. One place. |
-| Appearance | Force dark |
-| Canvas | `#000000` |
-| Elevated | `#121212` |
-| Accent | Harbor teal |
-| Amounts | SF Pro, monospaced digits |
+| token    | value                    |
+| -------- | ------------------------ |
+| name     | Harbor                   |
+| mark     | `anchor`                 |
+| home tab | `house`                  |
+| tagline  | All accounts. One place. |
+| canvas   | `#000000`                |
+| elevated | `#121212`                |
+| accent   | `#61C7D1`                |
+| amounts  | tabular nums             |
 
-## Page discipline
+## pages
 
-Home shows net worth hero, minimal chart, assets block, income/spending, recent.  
-Cash Flow owns the Sankey. Accounts owns balances. Activity owns the full ledger.
+home owns net worth + widgets. cash flow owns the sankey. accounts owns balances. activity owns the ledger.
 
-## Hierarchy
-
-Small muted labels. Oversized balances. Teal only for charts, income, and selected chrome.
+teal is for charts, income, and selected chrome — not decoration.

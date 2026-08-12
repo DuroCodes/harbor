@@ -1,0 +1,109 @@
+name: release
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platforms to build (sideload APK/IPA)
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+        default: all
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  sideload:
+    name: eas sideload
+    needs: [release-please]
+    if: |
+      always() && !cancelled() && (
+        (github.event_name == 'workflow_dispatch' && needs.release-please.result == 'skipped') ||
+        (github.event_name == 'push' && needs.release-please.outputs.release_created == 'true')
+      )
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name || github.sha }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          packager: bun
+
+      - name: Install dependencies
+        working-directory: .
+        run: bun install --frozen-lockfile
+
+      - name: Build sideload binaries
+        env:
+          PLATFORM: ${{ github.event_name == 'workflow_dispatch' && inputs.platform || 'all' }}
+        run: |
+          set -euo pipefail
+          eas build \
+            --platform "$PLATFORM" \
+            --profile sideload \
+            --non-interactive \
+            --wait \
+            --json \
+            > "${GITHUB_WORKSPACE}/eas-builds.json"
+          cat "${GITHUB_WORKSPACE}/eas-builds.json"
+
+      - name: Download artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p "${GITHUB_WORKSPACE}/artifacts"
+          bun "${GITHUB_WORKSPACE}/scripts/download-eas-artifacts.ts" \
+            "${GITHUB_WORKSPACE}/eas-builds.json" \
+            "${GITHUB_WORKSPACE}/artifacts"
+
+      - name: Upload GitHub Actions artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbor-sideload
+          path: artifacts/*
+          if-no-files-found: error
+
+      - name: Attach to GitHub Release
+        if: needs.release-please.outputs.release_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(${GITHUB_WORKSPACE}/artifacts/*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "no artifacts to upload"
+            exit 1
+          fi
+          gh release upload "$TAG" "${files[@]}" --clobber

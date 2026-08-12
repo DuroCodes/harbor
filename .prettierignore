@@ -1,0 +1,13 @@
+node_modules
+.expo
+dist
+web-build
+coverage
+.wrangler
+.mf
+apps/mobile/ios
+apps/mobile/android
+**/.dev.vars
+bun.lock
+*.icon
+apps/mobile/assets
