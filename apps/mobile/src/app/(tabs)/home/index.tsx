@@ -7,7 +7,6 @@ import {
   Modal,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   UIManager,
@@ -17,6 +16,7 @@ import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  ScrollView,
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -304,14 +304,13 @@ export default function HomeScreen() {
       <View ref={boardRef} style={layout.screen}>
         <ScrollView
           ref={scrollRef}
-          scrollEnabled={draggingID == null}
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[
             layout.screenPadding,
             {
               gap: theme.boardRowSpacing,
               paddingBottom: bottomPad,
-              paddingTop: isEditing ? 22 : 12,
+              paddingTop: isEditing ? 20 : 12,
             },
           ]}
           showsVerticalScrollIndicator={false}
@@ -456,23 +455,42 @@ function WidgetSlot({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  // Single pan gesture that activates after a long-press.
-  // Track with absolute finger coords so we never inherit stale translation.
-  const dragGesture = Gesture.Pan()
-    .enabled(isEditing)
-    .activateAfterLongPress(220)
-    .onStart((e) => {
-      runOnJS(onDragBegin)(e.absoluteX, e.absoluteY);
-    })
-    .onUpdate((e) => {
-      runOnJS(onDragUpdate)(e.absoluteX, e.absoluteY);
-    })
-    .onEnd(() => {
-      runOnJS(onDragEnd)();
-    })
-    .onFinalize((_e, success) => {
-      if (!success) runOnJS(onDragEnd)();
-    });
+  const beginRef = useRef(onDragBegin);
+  const updateRef = useRef(onDragUpdate);
+  const endRef = useRef(onDragEnd);
+  beginRef.current = onDragBegin;
+  updateRef.current = onDragUpdate;
+  endRef.current = onDragEnd;
+
+  const callBegin = useCallback((x: number, y: number) => {
+    beginRef.current(x, y);
+  }, []);
+  const callUpdate = useCallback((x: number, y: number) => {
+    updateRef.current(x, y);
+  }, []);
+  const callEnd = useCallback(() => {
+    endRef.current();
+  }, []);
+
+  // Keep the gesture identity stable across drag-start re-renders or the pan cancels.
+  const dragGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(isEditing)
+        .activateAfterLongPress(220)
+        .shouldCancelWhenOutside(false)
+        .maxPointers(1)
+        .onStart((e) => {
+          runOnJS(callBegin)(e.absoluteX, e.absoluteY);
+        })
+        .onUpdate((e) => {
+          runOnJS(callUpdate)(e.absoluteX, e.absoluteY);
+        })
+        .onEnd(() => {
+          runOnJS(callEnd)();
+        }),
+    [isEditing, callBegin, callUpdate, callEnd]
+  );
 
   return (
     <GestureDetector gesture={dragGesture}>
@@ -485,10 +503,11 @@ function WidgetSlot({
           />
         </Animated.View>
 
-        {isEditing && !isDragging ? (
+        {isEditing ? (
           <Pressable
             onPress={onRemove}
-            style={styles.removeBtn}
+            pointerEvents={isDragging ? 'none' : 'auto'}
+            style={[styles.removeBtn, isDragging && styles.chromeHidden]}
             accessibilityLabel={`Remove ${WIDGET_META[item.kind].title}`}
           >
             <GlassChrome>
@@ -497,10 +516,11 @@ function WidgetSlot({
           </Pressable>
         ) : null}
 
-        {isEditing && !isDragging && WIDGET_META[item.kind].allowsHalfWidth ? (
+        {isEditing && WIDGET_META[item.kind].allowsHalfWidth ? (
           <Pressable
             onPress={onResize}
-            style={styles.resizeBtn}
+            pointerEvents={isDragging ? 'none' : 'auto'}
+            style={[styles.resizeBtn, isDragging && styles.chromeHidden]}
             accessibilityLabel={
               item.width === 'half'
                 ? 'Expand to full width'
@@ -651,7 +671,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   slotEditing: {
-    overflow: 'visible',
+    paddingTop: 12,
+    paddingLeft: 12,
   },
   /** flexBasis/minWidth 0 — stop chart intrinsic width from blowing half tiles to full row */
   slotHalf: {
@@ -678,13 +699,16 @@ const styles = StyleSheet.create({
   },
   removeBtn: {
     position: 'absolute',
-    top: -18,
-    left: -18,
+    top: -2,
+    left: -2,
     width: 44,
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
+  },
+  chromeHidden: {
+    opacity: 0,
   },
   removeBar: {
     width: 10,
