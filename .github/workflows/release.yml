@@ -13,6 +13,11 @@ on:
           - ios
           - all
         default: android
+      attach_tag:
+        description: Optional GitHub release tag to attach artifacts to (e.g. v0.2.0)
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -24,14 +29,25 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+      # path-based package → outputs are `apps/mobile--*`, not root `release_created`
+      release_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs['apps/mobile--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+      - name: Debug release-please outputs
+        if: always()
+        env:
+          RELEASES_CREATED: ${{ steps.release.outputs.releases_created }}
+          MOBILE_RELEASE: ${{ steps.release.outputs['apps/mobile--release_created'] }}
+          MOBILE_TAG: ${{ steps.release.outputs['apps/mobile--tag_name'] }}
+        run: |
+          echo "releases_created=$RELEASES_CREATED"
+          echo "apps/mobile--release_created=$MOBILE_RELEASE"
+          echo "apps/mobile--tag_name=$MOBILE_TAG"
 
   sideload:
     name: eas sideload
@@ -94,16 +110,22 @@ jobs:
           if-no-files-found: error
 
       - name: Attach to GitHub Release
-        if: needs.release-please.outputs.release_created == 'true'
+        if: |
+          needs.release-please.outputs.release_created == 'true' ||
+          (github.event_name == 'workflow_dispatch' && inputs.attach_tag != '')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.release-please.outputs.tag_name }}
+          TAG: ${{ needs.release-please.outputs.tag_name || inputs.attach_tag }}
         run: |
           set -euo pipefail
           shopt -s nullglob
           files=(${GITHUB_WORKSPACE}/artifacts/*)
           if [ ${#files[@]} -eq 0 ]; then
             echo "no artifacts to upload"
+            exit 1
+          fi
+          if [ -z "${TAG}" ]; then
+            echo "no release tag to attach to"
             exit 1
           fi
           gh release upload "$TAG" "${files[@]}" --clobber
