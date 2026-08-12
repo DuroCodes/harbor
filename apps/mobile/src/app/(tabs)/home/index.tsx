@@ -311,7 +311,7 @@ export default function HomeScreen() {
             {
               gap: theme.boardRowSpacing,
               paddingBottom: bottomPad,
-              paddingTop: 12,
+              paddingTop: isEditing ? 22 : 12,
             },
           ]}
           showsVerticalScrollIndicator={false}
@@ -356,6 +356,7 @@ export default function HomeScreen() {
                       style={[
                         styles.slot,
                         half ? styles.slotHalf : styles.slotFull,
+                        isEditing && styles.slotEditing,
                         draggingID === item.id && { opacity: 0.22 },
                       ]}
                     >
@@ -648,6 +649,9 @@ const styles = StyleSheet.create({
   slot: {
     position: 'relative',
     overflow: 'hidden',
+  },
+  slotEditing: {
+    overflow: 'visible',
   },
   /** flexBasis/minWidth 0 — stop chart intrinsic width from blowing half tiles to full row */
   slotHalf: {
