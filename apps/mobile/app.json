@@ -9,8 +9,7 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "me.durocodes.harbor",
-      "appleTeamId": "7X7TNR3KQB",
+      "bundleIdentifier": "me.durocodes.Harbor",
       "icon": "./assets/Harbor.icon",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Harbor uses Face ID to unlock your finances."

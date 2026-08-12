@@ -18,12 +18,27 @@ bun install
 
 2. run the plaid proxy (see [`../plaid-proxy/README.md`](../plaid-proxy/README.md))
 
-3. build + launch
+3. build + launch (simulator)
 
 ```bash
 cd apps/mobile
 bun run ios
 ```
+
+physical iphone:
+
+```bash
+cd apps/mobile
+bunx expo run:ios --device
+```
+
+if signing fails the first time, open the workspace once and enable automatic signing with your personal team:
+
+```bash
+open ios/Harbor.xcworkspace
+```
+
+then select the **Harbor** target → **Signing & Capabilities** → pick your **Personal Team** → re-run `bunx expo run:ios --device`.
 
 or metro against an existing install:
 
@@ -49,7 +64,7 @@ apps/mobile/
   assets/
 ```
 
-bundle id: `me.durocodes.harbor`
+bundle id: `me.durocodes.Harbor`
 
 ## releases
 
