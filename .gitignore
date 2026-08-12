@@ -16,7 +16,43 @@ Icon?
 .cursor/
 *.code-workspace
 
-# Xcode
+# Secrets — never commit
+Config.local.plist
+*.pem
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
+!.env*.example
+**/.dev.vars
+!**/.dev.vars.example
+
+# Dependencies
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.*
+bun-debug.*
+
+# Expo / Metro
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+*.tsbuildinfo
+
+# Native (Expo prebuild)
+apps/mobile/ios/
+apps/mobile/android/
+.kotlin/
 DerivedData/
 build/
 Build/
@@ -29,58 +65,13 @@ xcuserdata/
 *.ipa
 *.dSYM.zip
 *.dSYM
-timeline.xctimeline
-playground.xcworkspace
 *.xcarchive
-*.app
-!**/Assets.xcassets/**
-
-# Swift Package Manager
-.build/
-.swiftpm/configuration/
-.swiftpm/xcode/
-Packages/
-Package.pins
-# Keep Package.resolved when using SPM deps so builds are reproducible
-# Package.resolved
-
-# CocoaPods / Carthage (if added later)
 Pods/
 Carthage/Build/
 
-# Secrets — never commit
-Config.local.plist
-*.pem
-*.p12
-*.mobileprovision
-.env
-.env.*
-!.env.example
-!.env*.example
-
-# Plaid proxy
-PlaidProxy/.dev.vars
-PlaidProxy/node_modules/
-PlaidProxy/dist/
-PlaidProxy/.wrangler/
-PlaidProxy/.mf/
-
-# Node / Expo (future app/ or apps/expo branch)
-node_modules/
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-pnpm-debug.*
-.expo/
-.expo-shared/
-dist/
-web-build/
-expo-env.d.ts
-*.jks
-*.keystore
-android/app/build/
-ios/Pods/
-ios/build/
+# Cloudflare Workers
+.wrangler/
+.mf/
 
 # Logs / coverage / misc
 *.log

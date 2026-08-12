@@ -1,6 +1,0 @@
-PLAID_CLIENT_ID=
-PLAID_SECRET=
-PROXY_API_KEY=replace-with-a-long-random-string
-PLAID_ENV=sandbox
-# PLAID_REDIRECT_URI=https://harbor-plaid-proxy.example.workers.dev/plaid/oauth
-# IOS_APP_ID=TEAMID.me.durocodes.Harbor

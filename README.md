@@ -1,109 +1,67 @@
-# Harbor
+# harbor
 
-A native, local-first personal finance app for iPhone — SwiftUI, SwiftData, and Plaid (Sandbox).
+local-first personal finance — expo + a tiny plaid proxy.
 
-## Architecture verdict: Plaid requires a minimal server
+## apps
 
-Plaid’s supported model **cannot** be implemented securely entirely inside the iOS app.
+| path                                             | what                                                  |
+| ------------------------------------------------ | ----------------------------------------------------- |
+| [`apps/mobile/`](apps/mobile/)                   | the app (`@expo/ui`, expo router)                     |
+| [`apps/plaid-proxy/`](apps/plaid-proxy/)         | cloudflare worker — keeps plaid secrets off the phone |
+| [`packages/plaid-proxy/`](packages/plaid-proxy/) | shared wire types + mappers                           |
 
-| Credential / token | Where it must live | Why |
-| --- | --- | --- |
-| `client_id` + `secret` | Server only | Required on every Plaid API call; must never ship in the app binary |
-| `link_token` | Created on server → passed to app | Initializes LinkKit |
-| `public_token` | App → server (one-time) | Exchanged for `access_token` |
-| `access_token` | Server only | Long-lived; used to pull accounts/transactions |
-| Account balances, transactions, categories | **On device (SwiftData)** | Local-first product data |
+## setup
 
-Required server calls:
+> [!NOTE]
+> plaid needs a tiny server. the phone never sees `client_secret` or item `access_token`s.
 
-1. `POST /link/token/create`
-2. `POST /item/public_token/exchange`
-3. `POST /accounts/get` (and/or balance)
-4. `POST /transactions/sync`
-5. (Optional) `POST /item/remove`
+1. clone the repo
+2. install deps from the root
 
-OAuth institutions also need a **Universal Link** redirect URI and a hosted `apple-app-site-association` file.
-
-### What we are *not* building
-
-- No multi-user SaaS
-- No hosted financial database of record
-- No Firebase/Supabase auth
-- No custom REST API for app business logic beyond the Plaid proxy
-
-### Minimum viable “backend”
-
-A tiny **Plaid proxy** (Cloudflare Worker in `PlaidProxy/`) that:
-
-- Holds Plaid secrets in Worker secrets / env
-- Stores Item `access_token`s in KV (not in the phone)
-- Authenticates the single personal client with a shared API key (Keychain on device)
-- Returns only account/transaction payloads to the app
-
-The iPhone remains the system of record for your finances after sync.
-
-## Platform
-
-| Item | Choice |
-| --- | --- |
-| Language / UI | Swift + SwiftUI |
-| Persistence | SwiftData |
-| Charts | Swift Charts |
-| Bank linking | Plaid LinkKit 7 via SPM (`plaid-link-ios-spm`) |
-| Min iOS | **18.0** (SwiftData + modern SwiftUI; LinkKit supports 15+) |
-| Xcode | 16.1+ (this machine has Xcode 26) |
-
-## App structure
-
-```
-Harbor/
-  App/                 # Entry, tabs, environment
-  Features/            # Dashboard, Accounts, Transactions, Settings
-  Domain/              # Pure financial calculations + enums
-  Data/                # SwiftData models + repositories
-  Integration/Plaid/   # LinkKit + proxy client + mappers
-  Integration/Security # Keychain, Face ID lock
-  Services/            # Sync orchestration
-PlaidProxy/            # Minimal Cloudflare Worker
+```bash
+bun install
 ```
 
-Views never talk to Plaid or SwiftData directly — they go through view models / services / repositories.
+3. run the plaid proxy — see [`apps/plaid-proxy/README.md`](apps/plaid-proxy/README.md)
+4. run the app — see [`apps/mobile/README.md`](apps/mobile/README.md)
 
-## Setup
+## scripts
 
-### 1. Plaid Sandbox
+```bash
+bun run format          # prettier write
+bun run format:check    # prettier check (ci)
+bun run typecheck
+```
 
-1. Create a [Plaid Dashboard](https://dashboard.plaid.com/) account
-2. Copy Sandbox `client_id` and `secret`
-3. Configure an Allowed Redirect URI (needed for OAuth banks), e.g. `https://harbor.example.com/plaid/`
+## releases / sideload builds
 
-### 2. Deploy the proxy
+[release-please](https://github.com/googleapis/release-please) opens a release PR from conventional commits on `main`. when that PR merges, ci:
 
-See `PlaidProxy/README.md`. Set secrets:
+1. cuts a github release (`vX.Y.Z`)
+2. runs **eas** `sideload` builds (apk + ipa)
+3. attaches `harbor-android.apk` / `harbor-ios.ipa` to the release
 
-- `PLAID_CLIENT_ID`
-- `PLAID_SECRET`
-- `PLAID_ENV=sandbox`
-- `PROXY_API_KEY` (long random string)
-- `PLAID_REDIRECT_URI` (must match Dashboard)
+you can also run **Actions → release → Run workflow** to build without cutting a release.
 
-### 3. Configure the iOS app
+### one-time eas setup
 
-In Settings (or `Config.plist` locally, gitignored):
+```bash
+cd apps/mobile
+bunx eas-cli login
+bunx eas-cli init          # writes projectId into app.json
+bunx eas-cli credentials   # apple + android signing
+bunx eas-cli device:create # register ios devices for ad-hoc install
+```
 
-- Proxy base URL
-- Proxy API key → stored in Keychain
+add a github secret:
 
-### 4. Run
+- `EXPO_TOKEN` — from [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens)
 
-Open `Harbor.xcodeproj` in Xcode, select an iPhone simulator, Run.
+> [!NOTE]
+> android apk installs on any device (unknown sources). ios ipa is **ad-hoc** — each device udid must be registered first.
 
-Without proxy credentials, Harbor stays empty until you configure the proxy and connect a Sandbox institution.
+## privacy
 
-## Privacy
-
-- Financial data stays in on-device SwiftData
-- No logging of balances, account numbers, or tokens
-- Secrets and proxy API key in Keychain
-- Optional Face ID / device passcode gate on launch
-- Only the Plaid proxy receives tokens required for sync
+- balances / transactions stay on device
+- secrets + proxy api key live in keychain
+- optional face id / passcode lock on launch
