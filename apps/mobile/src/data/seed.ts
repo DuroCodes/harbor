@@ -1,9 +1,16 @@
 /**
  * Realistic Harbor demo seed — institutions, accounts, transactions, snapshots, categories.
  */
-import type { Account, Category, Institution, NetWorthSnapshot, Transaction } from '@/lib/types';
+import type {
+  Account,
+  Category,
+  Institution,
+  NetWorthSnapshot,
+  Transaction,
+} from '@/lib/types';
 
-const id = (prefix: string, n: number): string => `${prefix}-${n.toString().padStart(4, '0')}`;
+const id = (prefix: string, n: number): string =>
+  `${prefix}-${n.toString().padStart(4, '0')}`;
 
 const daysAgo = (n: number): string => {
   const d = new Date();

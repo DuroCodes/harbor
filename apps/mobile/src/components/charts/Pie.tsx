@@ -1,6 +1,12 @@
 /** Donut spending chart (compact + full). Tap a slice or legend row to highlight it and show that category's amount. */
 import { useMemo, useState } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
 import { brand, surface, theme, typo } from '@/theme/tokens';
@@ -41,10 +47,18 @@ const arcPath = (
   ].join(' ');
 };
 
-export function Pie({ data, highlightedNodeID, onSelectNode, compact = false }: Props) {
+export function Pie({
+  data,
+  highlightedNodeID,
+  onSelectNode,
+  compact = false,
+}: Props) {
   const slices = useMemo(() => {
-    const expenses = data.outflowNodes.filter((n) => n.kind === 'expense' && n.amount > 0);
-    if (expenses.length === 0) return data.outflowNodes.filter((n) => n.amount > 0);
+    const expenses = data.outflowNodes.filter(
+      (n) => n.kind === 'expense' && n.amount > 0
+    );
+    if (expenses.length === 0)
+      return data.outflowNodes.filter((n) => n.amount > 0);
     return expenses;
   }, [data]);
 
@@ -72,13 +86,21 @@ export function Pie({ data, highlightedNodeID, onSelectNode, compact = false }: 
     const start = angle + gap / 2;
     const end = angle + sweep - gap / 2;
     angle += sweep;
-    return { node, index, start: Math.min(start, end), end: Math.max(start, end) };
+    return {
+      node,
+      index,
+      start: Math.min(start, end),
+      end: Math.max(start, end),
+    };
   });
 
   const activeID = highlightedNodeID ?? pressedID;
-  const activeNode = activeID ? (slices.find((n) => n.id === activeID) ?? null) : null;
+  const activeNode = activeID
+    ? (slices.find((n) => n.id === activeID) ?? null)
+    : null;
 
-  const opacityFor = (id: string) => (activeID == null || activeID === id ? 1 : 0.28);
+  const opacityFor = (id: string) =>
+    activeID == null || activeID === id ? 1 : 0.28;
 
   const toggleSelect = (id: string) => {
     if (!onSelectNode) return;
@@ -88,7 +110,9 @@ export function Pie({ data, highlightedNodeID, onSelectNode, compact = false }: 
   return (
     <View style={styles.wrap}>
       <View
-        onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
+        onLayout={(e: LayoutChangeEvent) =>
+          setWidth(e.nativeEvent.layout.width)
+        }
         style={[styles.chartBox, { height: chartHeight }]}
       >
         {width > 0 ? (
@@ -99,7 +123,9 @@ export function Pie({ data, highlightedNodeID, onSelectNode, compact = false }: 
                   <Path
                     key={node.id}
                     d={arcPath(cx, cy, outerR, innerR, start, end)}
-                    fill={brand.expensePalette[index % brand.expensePalette.length]}
+                    fill={
+                      brand.expensePalette[index % brand.expensePalette.length]
+                    }
                     opacity={opacityFor(node.id)}
                     onPress={() => toggleSelect(node.id)}
                     onPressIn={() => setPressedID(node.id)}
@@ -118,7 +144,10 @@ export function Pie({ data, highlightedNodeID, onSelectNode, compact = false }: 
                   numberOfLines={1}
                   adjustsFontSizeToFit
                 >
-                  {format.money(activeNode?.amount ?? total, (activeNode?.amount ?? total) >= 1000)}
+                  {format.money(
+                    activeNode?.amount ?? total,
+                    (activeNode?.amount ?? total) >= 1000
+                  )}
                 </Text>
               </View>
             ) : null}
@@ -155,7 +184,8 @@ function FlowLegend({
               style={[
                 styles.dot,
                 {
-                  backgroundColor: brand.expensePalette[index % brand.expensePalette.length],
+                  backgroundColor:
+                    brand.expensePalette[index % brand.expensePalette.length],
                 },
               ]}
             />
@@ -172,7 +202,10 @@ function FlowLegend({
             style={[
               styles.legendItem,
               {
-                opacity: highlightedNodeID == null || highlightedNodeID === node.id ? 1 : 0.35,
+                opacity:
+                  highlightedNodeID == null || highlightedNodeID === node.id
+                    ? 1
+                    : 0.35,
               },
             ]}
           >
@@ -184,7 +217,10 @@ function FlowLegend({
             style={[
               styles.legendItem,
               {
-                opacity: highlightedNodeID == null || highlightedNodeID === node.id ? 1 : 0.35,
+                opacity:
+                  highlightedNodeID == null || highlightedNodeID === node.id
+                    ? 1
+                    : 0.35,
               },
             ]}
           >

@@ -1,9 +1,20 @@
 import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { brand, surface } from '@/theme/tokens';
-import { isValidPasscode, unlockWithBiometrics, verifyPasscode } from '@/lib/lock';
+import {
+  isValidPasscode,
+  unlockWithBiometrics,
+  verifyPasscode,
+} from '@/lib/lock';
 
 type Props = {
   biometricsEnabled: boolean;
@@ -67,7 +78,12 @@ export function LockScreen({
 
   return (
     <View style={styles.screen}>
-      <SymbolView name="lock" size={40} tintColor={surface.labelMuted} weight="light" />
+      <SymbolView
+        name="lock"
+        size={40}
+        tintColor={surface.labelMuted}
+        weight="light"
+      />
       <Text style={styles.title}>Harbor</Text>
       <Text style={styles.subtitle}>Unlock to view your finances</Text>
 
@@ -89,7 +105,10 @@ export function LockScreen({
             style={styles.field}
           />
           <Pressable
-            style={[styles.primaryBtn, passcode.length < 4 && styles.btnDisabled]}
+            style={[
+              styles.primaryBtn,
+              passcode.length < 4 && styles.btnDisabled,
+            ]}
             disabled={passcode.length < 4}
             onPress={() => void attemptPasscode(passcode)}
           >
@@ -133,7 +152,9 @@ export function LockScreen({
               })();
             }}
           >
-            <Text style={styles.primaryLabel}>Unlock with {biometricsName}</Text>
+            <Text style={styles.primaryLabel}>
+              Unlock with {biometricsName}
+            </Text>
           </Pressable>
           <Pressable onPress={() => setShowPasscodeEntry(true)}>
             <Text style={styles.link}>Use Passcode</Text>

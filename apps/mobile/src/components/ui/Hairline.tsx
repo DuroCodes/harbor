@@ -8,7 +8,12 @@ type Props = {
 
 export function Hairline({ leadingInset = 0 }: Props) {
   return (
-    <View style={[styles.line, { marginLeft: leadingInset, backgroundColor: surface.hairline }]} />
+    <View
+      style={[
+        styles.line,
+        { marginLeft: leadingInset, backgroundColor: surface.hairline },
+      ]}
+    />
   );
 }
 

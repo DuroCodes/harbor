@@ -24,7 +24,10 @@ export default function BudgetsScreen() {
     <View style={layout.screen}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[layout.screenPadding, { gap: theme.sectionSpacing }]}
+        contentContainerStyle={[
+          layout.screenPadding,
+          { gap: theme.sectionSpacing },
+        ]}
       >
         {app.budgetProgress.length > 0 ? (
           <View style={{ gap: 12 }}>
@@ -38,7 +41,10 @@ export default function BudgetsScreen() {
           <Card padding={4}>
             {expenseCategories.map((category, index) => (
               <View key={category.id}>
-                <Pressable style={styles.catRow} onPress={() => setEditing(category)}>
+                <Pressable
+                  style={styles.catRow}
+                  onPress={() => setEditing(category)}
+                >
                   <SymbolView
                     name={category.systemImage as any}
                     size={15}
@@ -61,13 +67,15 @@ export default function BudgetsScreen() {
                     weight="semibold"
                   />
                 </Pressable>
-                {index < expenseCategories.length - 1 ? <Hairline leadingInset={52} /> : null}
+                {index < expenseCategories.length - 1 ? (
+                  <Hairline leadingInset={52} />
+                ) : null}
               </View>
             ))}
           </Card>
           <Text style={styles.footer}>
-            Budgets apply to the current calendar month. Spending matches Cash Flow — transfers
-            excluded, refunds netted.
+            Budgets apply to the current calendar month. Spending matches Cash
+            Flow — transfers excluded, refunds netted.
           </Text>
         </View>
       </ScrollView>

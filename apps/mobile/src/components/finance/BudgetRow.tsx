@@ -45,7 +45,9 @@ export function BudgetRow({ item, compact = false }: Props) {
           style={[
             typo.amount(17, '500'),
             {
-              color: item.isOverBudget ? brand.expensePalette[0] : surface.label,
+              color: item.isOverBudget
+                ? brand.expensePalette[0]
+                : surface.label,
             },
           ]}
           numberOfLines={1}
@@ -59,7 +61,8 @@ export function BudgetRow({ item, compact = false }: Props) {
             styles.barFill,
             {
               backgroundColor: barColor,
-              width: `${Math.max(2, Math.min(item.fractionUsed, 1) * 100)}%` as any,
+              width:
+                `${Math.max(2, Math.min(item.fractionUsed, 1) * 100)}%` as any,
             },
           ]}
         />

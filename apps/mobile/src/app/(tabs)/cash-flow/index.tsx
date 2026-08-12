@@ -45,7 +45,8 @@ export default function CashFlowScreen() {
       : Math.abs(sankeyData.leftover);
 
   const heroPositive =
-    !(sankeyData.totalIncome === 0 && sankeyData.totalSpending > 0) && sankeyData.leftover >= 0;
+    !(sankeyData.totalIncome === 0 && sankeyData.totalSpending > 0) &&
+    sankeyData.leftover >= 0;
 
   return (
     <View style={layout.screen}>
@@ -90,9 +91,16 @@ export default function CashFlowScreen() {
 
         {sankeyData.isEmpty ? (
           <View style={styles.empty}>
-            <SymbolView name="chart.bar" size={40} tintColor={surface.labelMuted} weight="light" />
+            <SymbolView
+              name="chart.bar"
+              size={40}
+              tintColor={surface.labelMuted}
+              weight="light"
+            />
             <Text style={styles.emptyTitle}>No activity</Text>
-            <Text style={styles.emptyBody}>Nothing recorded for {monthTitle}.</Text>
+            <Text style={styles.emptyBody}>
+              Nothing recorded for {monthTitle}.
+            </Text>
           </View>
         ) : (
           <>
@@ -117,14 +125,20 @@ export default function CashFlowScreen() {
               <View style={styles.summaryRow}>
                 <View style={styles.summaryCell}>
                   <Text style={styles.caption}>Income</Text>
-                  <Text style={[typo.amount(20), { color: theme.positive }]} numberOfLines={1}>
+                  <Text
+                    style={[typo.amount(20), { color: theme.positive }]}
+                    numberOfLines={1}
+                  >
                     {format.money(sankeyData.totalIncome)}
                   </Text>
                 </View>
                 <View style={styles.vDivider} />
                 <View style={styles.summaryCell}>
                   <Text style={styles.caption}>Spending</Text>
-                  <Text style={[typo.amount(20), { color: surface.label }]} numberOfLines={1}>
+                  <Text
+                    style={[typo.amount(20), { color: surface.label }]}
+                    numberOfLines={1}
+                  >
                     {format.money(sankeyData.totalSpending)}
                   </Text>
                 </View>
@@ -133,12 +147,17 @@ export default function CashFlowScreen() {
 
             <View style={{ gap: 10 }}>
               <View style={styles.chartHeader}>
-                <Text style={styles.section}>{chartKind === 'sankey' ? 'Flow' : 'Spending'}</Text>
+                <Text style={styles.section}>
+                  {chartKind === 'sankey' ? 'Flow' : 'Spending'}
+                </Text>
                 <ChartMenu value={chartKind} onChange={setChartKind} />
               </View>
               <View style={{ paddingVertical: 4 }}>
                 {chartKind === 'sankey' ? (
-                  <Sankey data={sankeyData} highlightedNodeID={selectedNodeID} />
+                  <Sankey
+                    data={sankeyData}
+                    highlightedNodeID={selectedNodeID}
+                  />
                 ) : (
                   <Pie
                     data={sankeyData}
@@ -158,15 +177,24 @@ export default function CashFlowScreen() {
                       style={[
                         styles.breakRow,
                         {
-                          opacity: selectedNodeID == null || selectedNodeID === node.id ? 1 : 0.35,
+                          opacity:
+                            selectedNodeID == null || selectedNodeID === node.id
+                              ? 1
+                              : 0.35,
                         },
                       ]}
-                      onPress={() => setSelectedNodeID((id) => (id === node.id ? null : node.id))}
+                      onPress={() =>
+                        setSelectedNodeID((id) =>
+                          id === node.id ? null : node.id
+                        )
+                      }
                     >
                       <SymbolView
                         name={
                           (node.systemImage ??
-                            (node.kind === 'leftover' ? 'checkmark.circle' : 'circle')) as any
+                            (node.kind === 'leftover'
+                              ? 'checkmark.circle'
+                              : 'circle')) as any
                         }
                         size={15}
                         tintColor={surface.labelMuted}
@@ -178,7 +206,10 @@ export default function CashFlowScreen() {
                         style={[
                           typo.amount(20),
                           {
-                            color: node.kind === 'leftover' ? theme.positive : surface.label,
+                            color:
+                              node.kind === 'leftover'
+                                ? theme.positive
+                                : surface.label,
                           },
                         ]}
                       >

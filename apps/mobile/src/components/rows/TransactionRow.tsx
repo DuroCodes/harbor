@@ -33,17 +33,24 @@ export function TransactionRow({ transaction, category }: Props) {
           {transactionDisplayMerchant(transaction)}
         </Text>
         <View style={styles.meta}>
-          <Text style={styles.metaText}>{format.shortDate(transaction.date)}</Text>
+          <Text style={styles.metaText}>
+            {format.shortDate(transaction.date)}
+          </Text>
           {transaction.status === 'pending' ? (
             <>
               <Text style={styles.metaText}> · </Text>
-              <Text style={[styles.metaText, { color: `${brand.accent}D9` }]}>Pending</Text>
+              <Text style={[styles.metaText, { color: `${brand.accent}D9` }]}>
+                Pending
+              </Text>
             </>
           ) : null}
         </View>
       </View>
       <Text
-        style={[typo.amount(17, '500'), { color: signed >= 0 ? theme.positive : surface.label }]}
+        style={[
+          typo.amount(17, '500'),
+          { color: signed >= 0 ? theme.positive : surface.label },
+        ]}
         numberOfLines={1}
       >
         {format.signedMoney(signed)}

@@ -1,13 +1,25 @@
 import { SymbolView } from 'expo-symbols';
 import { Stack } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { RectButton, Swipeable } from 'react-native-gesture-handler';
 
 import { AccountRow } from '@/components/rows/AccountRow';
 import { brand, surface, layout } from '@/theme/tokens';
 import { useApp } from '@/context/app';
-import { ACCOUNT_GROUP_META, accountGroup, type Account, type AccountGroup } from '@/lib/types';
+import {
+  ACCOUNT_GROUP_META,
+  accountGroup,
+  type Account,
+  type AccountGroup,
+} from '@/lib/types';
 
 export default function AccountsScreen() {
   const app = useApp();
@@ -57,7 +69,9 @@ export default function AccountsScreen() {
             weight="light"
           />
           <Text style={styles.emptyTitle}>No Accounts</Text>
-          <Text style={styles.emptyBody}>Connect an institution to get started.</Text>
+          <Text style={styles.emptyBody}>
+            Connect an institution to get started.
+          </Text>
         </View>
       ) : (
         <SectionList
@@ -73,7 +87,10 @@ export default function AccountsScreen() {
             <Swipeable
               overshootRight={false}
               renderRightActions={() => (
-                <RectButton style={styles.unlinkAction} onPress={() => unlink(item)}>
+                <RectButton
+                  style={styles.unlinkAction}
+                  onPress={() => unlink(item)}
+                >
                   <Text style={styles.unlinkLabel}>Unlink</Text>
                 </RectButton>
               )}
@@ -88,7 +105,11 @@ export default function AccountsScreen() {
               >
                 <AccountRow
                   account={item}
-                  institution={item.institutionID ? app.institutionsById[item.institutionID] : null}
+                  institution={
+                    item.institutionID
+                      ? app.institutionsById[item.institutionID]
+                      : null
+                  }
                 />
               </Pressable>
             </Swipeable>

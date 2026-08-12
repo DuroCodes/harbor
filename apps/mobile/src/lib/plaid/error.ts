@@ -1,4 +1,5 @@
-export type PlaidProxyErrorCode = 'notConfigured' | 'invalidURL' | 'http' | 'decoding';
+export type PlaidProxyErrorCode =
+  'notConfigured' | 'invalidURL' | 'http' | 'decoding';
 
 export class PlaidProxyError extends Error {
   code: PlaidProxyErrorCode;

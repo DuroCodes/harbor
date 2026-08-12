@@ -19,7 +19,10 @@ export const isValidPasscode = (passcode: string): boolean => {
 };
 
 const hashPasscode = (passcode: string): Promise<string> =>
-  Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, normalize(passcode));
+  Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    normalize(passcode)
+  );
 
 const biometricsMeta = async (): Promise<{
   available: boolean;
@@ -30,9 +33,13 @@ const biometricsMeta = async (): Promise<{
   const available = hasHardware && enrolled;
   const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
   let name = 'Biometrics';
-  if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
+  if (
+    types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)
+  ) {
     name = 'Face ID';
-  } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+  } else if (
+    types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)
+  ) {
     name = 'Touch ID';
   } else if (types.includes(LocalAuthentication.AuthenticationType.IRIS)) {
     name = 'Optic ID';

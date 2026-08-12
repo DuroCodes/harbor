@@ -1,6 +1,12 @@
 import type { PlaidAccountDTO, PlaidTransactionDTO } from '@harbor/plaid-proxy';
 
-import type { Account, AccountKind, AccountSubtype, Category, Transaction } from '@/lib/types';
+import type {
+  Account,
+  AccountKind,
+  AccountSubtype,
+  Category,
+  Transaction,
+} from '@/lib/types';
 
 export const accountKindFromPlaid = (type: string): AccountKind => {
   switch (type.toLowerCase()) {
@@ -19,7 +25,9 @@ export const accountKindFromPlaid = (type: string): AccountKind => {
   }
 };
 
-export const accountSubtypeFromPlaid = (subtype?: string | null): AccountSubtype => {
+export const accountSubtypeFromPlaid = (
+  subtype?: string | null
+): AccountSubtype => {
   if (!subtype) return 'other';
   switch (subtype.toLowerCase()) {
     case 'checking':
@@ -51,7 +59,10 @@ export const accountSubtypeFromPlaid = (subtype?: string | null): AccountSubtype
   }
 };
 
-export const mapAccountDTO = (dto: PlaidAccountDTO, institutionID: string): Account => ({
+export const mapAccountDTO = (
+  dto: PlaidAccountDTO,
+  institutionID: string
+): Account => ({
   id: dto.accountID,
   plaidAccountID: dto.accountID,
   name: dto.name,
@@ -75,7 +86,9 @@ export const resolveCategoryID = (
   const detailed = dto.personalFinanceCategory?.detailed;
   const primary = dto.personalFinanceCategory?.primary;
   if (detailed) {
-    const match = categories.find((c) => c.plaidPrimaryKeys?.includes(detailed));
+    const match = categories.find((c) =>
+      c.plaidPrimaryKeys?.includes(detailed)
+    );
     if (match) return match.id;
   }
   if (primary) {
@@ -88,7 +101,9 @@ export const resolveCategoryID = (
 export const mapTransactionDTO = (
   dto: PlaidTransactionDTO,
   categories: Category[]
-): Omit<Transaction, 'id' | 'notes'> & { pendingTransactionID?: string | null } => ({
+): Omit<Transaction, 'id' | 'notes'> & {
+  pendingTransactionID?: string | null;
+} => ({
   plaidTransactionID: dto.transactionID,
   pendingTransactionID: dto.pendingTransactionID ?? null,
   merchantName: dto.merchantName ?? undefined,

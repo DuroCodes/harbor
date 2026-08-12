@@ -89,7 +89,11 @@ export function BudgetEditor({ category, onDismiss, onSave, onClear }: Props) {
               alignment="leading"
               modifiers={[
                 padding({ all: 20 }),
-                frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }),
+                frame({
+                  maxWidth: Infinity,
+                  maxHeight: Infinity,
+                  alignment: 'topLeading',
+                }),
                 background(surface.canvas),
               ]}
             >
@@ -113,7 +117,10 @@ export function BudgetEditor({ category, onDismiss, onSave, onClear }: Props) {
                 <Spacer />
                 <Button
                   label="Save"
-                  modifiers={[buttonStyle('glassProminent'), tint(brand.accent)]}
+                  modifiers={[
+                    buttonStyle('glassProminent'),
+                    tint(brand.accent),
+                  ]}
                   onPress={() => {
                     onSave(parseAmount());
                   }}
@@ -128,14 +135,26 @@ export function BudgetEditor({ category, onDismiss, onSave, onClear }: Props) {
                   modifiers={[font({ weight: 'light' })]}
                 />
                 <Text
-                  modifiers={[font({ size: 20, weight: 'medium' }), foregroundStyle(surface.label)]}
+                  modifiers={[
+                    font({ size: 20, weight: 'medium' }),
+                    foregroundStyle(surface.label),
+                  ]}
                 >
                   {category.name}
                 </Text>
               </HStack>
 
-              <VStack spacing={8} alignment="leading" modifiers={[frame({ maxWidth: Infinity })]}>
-                <Text modifiers={[font({ size: 12 }), foregroundStyle(surface.labelMuted)]}>
+              <VStack
+                spacing={8}
+                alignment="leading"
+                modifiers={[frame({ maxWidth: Infinity })]}
+              >
+                <Text
+                  modifiers={[
+                    font({ size: 12 }),
+                    foregroundStyle(surface.labelMuted),
+                  ]}
+                >
                   Monthly budget
                 </Text>
                 <TextField
@@ -165,7 +184,10 @@ export function BudgetEditor({ category, onDismiss, onSave, onClear }: Props) {
                 <Button
                   label="Remove Budget"
                   role="destructive"
-                  modifiers={[buttonStyle('glass'), tint(brand.expensePalette[0])]}
+                  modifiers={[
+                    buttonStyle('glass'),
+                    tint(brand.expensePalette[0]),
+                  ]}
                   onPress={onClear}
                 />
               ) : null}

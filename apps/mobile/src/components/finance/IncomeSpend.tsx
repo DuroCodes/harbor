@@ -11,7 +11,12 @@ type Props = {
   showsHeader?: boolean;
 };
 
-export function IncomeSpend({ income, spending, compact = false, showsHeader = false }: Props) {
+export function IncomeSpend({
+  income,
+  spending,
+  compact = false,
+  showsHeader = false,
+}: Props) {
   return (
     <View style={[styles.wrap, compact && styles.wrapCompact]}>
       {showsHeader ? <Text style={styles.header}>This month</Text> : null}
@@ -35,12 +40,23 @@ export function IncomeSpend({ income, spending, compact = false, showsHeader = f
   );
 }
 
-function Cell({ title, value, positive }: { title: string; value: number; positive: boolean }) {
+function Cell({
+  title,
+  value,
+  positive,
+}: {
+  title: string;
+  value: number;
+  positive: boolean;
+}) {
   return (
     <View style={styles.cell}>
       <Text style={styles.caption}>{title}</Text>
       <Text
-        style={[typo.amount(20), { color: positive ? theme.positive : surface.label }]}
+        style={[
+          typo.amount(20),
+          { color: positive ? theme.positive : surface.label },
+        ]}
         numberOfLines={1}
       >
         {format.money(value)}
@@ -62,7 +78,10 @@ function CompactCell({
     <View style={styles.compactCell}>
       <Text style={styles.compactCaption}>{title}</Text>
       <Text
-        style={[typo.amount(17), { color: positive ? theme.positive : surface.label }]}
+        style={[
+          typo.amount(17),
+          { color: positive ? theme.positive : surface.label },
+        ]}
         numberOfLines={1}
       >
         {format.money(value)}

@@ -23,7 +23,10 @@ export const defaultActivityFilters = (): ActivityFilters => ({
 });
 
 export const activityFiltersActive = (f: ActivityFilters) =>
-  f.categoryID != null || f.accountID != null || f.status !== 'all' || f.kind !== 'all';
+  f.categoryID != null ||
+  f.accountID != null ||
+  f.status !== 'all' ||
+  f.kind !== 'all';
 
 type Props = {
   filters: ActivityFilters;
@@ -32,7 +35,12 @@ type Props = {
   accounts: Account[];
 };
 
-export function ActivityFilterMenu({ filters, onChange, categories, accounts }: Props) {
+export function ActivityFilterMenu({
+  filters,
+  onChange,
+  categories,
+  accounts,
+}: Props) {
   const active = activityFiltersActive(filters);
 
   return (
@@ -40,7 +48,13 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
       <Host matchContents colorScheme="dark" seedColor={brand.accent}>
         {/* Custom label — string+systemImage overlaps in the toolbar Host. */}
         <Menu
-          label={<Image systemName="line.3.horizontal.decrease" size={17} color={brand.accent} />}
+          label={
+            <Image
+              systemName="line.3.horizontal.decrease"
+              size={17}
+              color={brand.accent}
+            />
+          }
         >
           <Section title="Category">
             <Button
@@ -52,7 +66,11 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
               <Button
                 key={c.id}
                 label={c.name}
-                systemImage={(filters.categoryID === c.id ? 'checkmark' : c.systemImage) as any}
+                systemImage={
+                  (filters.categoryID === c.id
+                    ? 'checkmark'
+                    : c.systemImage) as any
+                }
                 onPress={() => onChange({ ...filters, categoryID: c.id })}
               />
             ))}
@@ -68,7 +86,9 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
               <Button
                 key={a.id}
                 label={accountDisplayName(a)}
-                systemImage={filters.accountID === a.id ? 'checkmark' : undefined}
+                systemImage={
+                  filters.accountID === a.id ? 'checkmark' : undefined
+                }
                 onPress={() => onChange({ ...filters, accountID: a.id })}
               />
             ))}
@@ -82,12 +102,16 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
             />
             <Button
               label="Pending"
-              systemImage={filters.status === 'pending' ? 'checkmark' : undefined}
+              systemImage={
+                filters.status === 'pending' ? 'checkmark' : undefined
+              }
               onPress={() => onChange({ ...filters, status: 'pending' })}
             />
             <Button
               label="Posted"
-              systemImage={filters.status === 'posted' ? 'checkmark' : undefined}
+              systemImage={
+                filters.status === 'posted' ? 'checkmark' : undefined
+              }
               onPress={() => onChange({ ...filters, status: 'posted' })}
             />
           </Section>
@@ -100,7 +124,9 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
             />
             <Button
               label="Spending"
-              systemImage={filters.kind === 'spending' ? 'checkmark' : undefined}
+              systemImage={
+                filters.kind === 'spending' ? 'checkmark' : undefined
+              }
               onPress={() => onChange({ ...filters, kind: 'spending' })}
             />
             <Button
@@ -110,7 +136,9 @@ export function ActivityFilterMenu({ filters, onChange, categories, accounts }: 
             />
             <Button
               label="Transfers"
-              systemImage={filters.kind === 'transfers' ? 'checkmark' : undefined}
+              systemImage={
+                filters.kind === 'transfers' ? 'checkmark' : undefined
+              }
               onPress={() => onChange({ ...filters, kind: 'transfers' })}
             />
           </Section>
@@ -137,13 +165,19 @@ type ChipsProps = {
   accounts: Account[];
 };
 
-export function ActivityFilterChips({ filters, onChange, categories, accounts }: ChipsProps) {
+export function ActivityFilterChips({
+  filters,
+  onChange,
+  categories,
+  accounts,
+}: ChipsProps) {
   if (!activityFiltersActive(filters)) return null;
 
   const chips: { key: string; label: string; clear: () => void }[] = [];
 
   if (filters.categoryID) {
-    const name = categories.find((c) => c.id === filters.categoryID)?.name ?? 'Category';
+    const name =
+      categories.find((c) => c.id === filters.categoryID)?.name ?? 'Category';
     chips.push({
       key: 'cat',
       label: name,
@@ -194,7 +228,10 @@ export function ActivityFilterChips({ filters, onChange, categories, accounts }:
           <Text style={styles.chipX}>✕</Text>
         </Pressable>
       ))}
-      <Pressable onPress={() => onChange(defaultActivityFilters())} style={styles.clearChip}>
+      <Pressable
+        onPress={() => onChange(defaultActivityFilters())}
+        style={styles.clearChip}
+      >
         <Text style={styles.clearText}>Clear</Text>
       </Pressable>
     </ScrollView>

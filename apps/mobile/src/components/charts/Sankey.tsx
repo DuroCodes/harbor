@@ -4,7 +4,11 @@ import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 
 import { brand, surface, theme } from '@/theme/tokens';
 import { format } from '@/lib/format';
-import type { CashFlowLink, CashFlowNode, CashFlowSankeyData } from '@/lib/types';
+import type {
+  CashFlowLink,
+  CashFlowNode,
+  CashFlowSankeyData,
+} from '@/lib/types';
 
 type Props = {
   data: CashFlowSankeyData;
@@ -19,7 +23,14 @@ type PreparedSankey = {
   mode: 'incomeToSpending' | 'spendingOnly';
 };
 
-type LaidOutNode = { id: string; x: number; y: number; w: number; h: number; color: string };
+type LaidOutNode = {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  color: string;
+};
 type LaidOutLabel = {
   id: string;
   title: string;
@@ -69,7 +80,8 @@ const prepare = (data: CashFlowSankeyData): PreparedSankey => {
   if (incomeTotal > 0) {
     const source: CashFlowNode = {
       id: 'in-total',
-      title: data.incomeNodes.length === 1 ? data.incomeNodes[0].title : 'Income',
+      title:
+        data.incomeNodes.length === 1 ? data.incomeNodes[0].title : 'Income',
       amount: incomeTotal,
       systemImage: 'arrow.down.circle',
       kind: 'income',
@@ -88,7 +100,12 @@ const prepare = (data: CashFlowSankeyData): PreparedSankey => {
   }
 
   if (outflow.length === 0) {
-    return { sourceNodes: [], outflowNodes: [], links: [], mode: 'spendingOnly' };
+    return {
+      sourceNodes: [],
+      outflowNodes: [],
+      links: [],
+      mode: 'spendingOnly',
+    };
   }
 
   const spendingTotal = outflow.reduce((s, n) => s + n.amount, 0);
@@ -112,7 +129,11 @@ const prepare = (data: CashFlowSankeyData): PreparedSankey => {
   };
 };
 
-const nodeColor = (node: CashFlowNode, index: number, mode: PreparedSankey['mode']): string => {
+const nodeColor = (
+  node: CashFlowNode,
+  index: number,
+  mode: PreparedSankey['mode']
+): string => {
   if (node.kind === 'income') return brand.inflow;
   if (node.kind === 'leftover') return brand.accent;
   if (node.id === 'in-spending') return brand.outflowSource;
@@ -162,7 +183,9 @@ const layout = (
     chartHeight = maxChartHeight;
   } else {
     const idealBody = Math.max(outflows.length * 44, 120);
-    heights = outflows.map((n) => Math.max((n.amount / outflowTotal) * idealBody, minNodeHeight));
+    heights = outflows.map((n) =>
+      Math.max((n.amount / outflowTotal) * idealBody, minNodeHeight)
+    );
     const heightSum = heights.reduce((a, b) => a + b, 0);
     if (heightSum > idealBody * 1.8) {
       const scale = (idealBody * 1.35) / heightSum;
@@ -224,7 +247,13 @@ const layout = (
     let sourceY = 0;
     for (const right of rightNodes) {
       const thickness = right.h;
-      const d = ribbonPath(left.x + left.w, sourceY, right.x, right.y, thickness);
+      const d = ribbonPath(
+        left.x + left.w,
+        sourceY,
+        right.x,
+        right.y,
+        thickness
+      );
       links.push({
         id: `${left.id}->${right.id}`,
         sourceID: left.id,
@@ -264,7 +293,10 @@ export function Sankey({ data, highlightedNodeID, compact = false }: Props) {
     return null;
   }
 
-  const canvasWidth = Math.max(width - 2 * labelWidth - 2 * columnGap, nodeWidth * 2 + 40);
+  const canvasWidth = Math.max(
+    width - 2 * labelWidth - 2 * columnGap,
+    nodeWidth * 2 + 40
+  );
 
   const laidOut = layout(
     prepared,
@@ -275,16 +307,21 @@ export function Sankey({ data, highlightedNodeID, compact = false }: Props) {
     compact ? compactChartHeight : undefined
   );
 
-  const shouldDimNode = (id: string) => highlightedNodeID != null && id !== highlightedNodeID;
+  const shouldDimNode = (id: string) =>
+    highlightedNodeID != null && id !== highlightedNodeID;
   const shouldDimLink = (link: LaidOutLink) =>
     highlightedNodeID != null &&
     link.sourceID !== highlightedNodeID &&
     link.targetID !== highlightedNodeID;
 
-  const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
+  const onLayout = (e: LayoutChangeEvent) =>
+    setWidth(e.nativeEvent.layout.width);
 
   return (
-    <View onLayout={onLayout} style={[styles.row, { height: laidOut.chartHeight }]}>
+    <View
+      onLayout={onLayout}
+      style={[styles.row, { height: laidOut.chartHeight }]}
+    >
       {!compact ? (
         <View style={{ width: labelWidth }}>
           {laidOut.leftLabels.map((node) => (
@@ -312,7 +349,13 @@ export function Sankey({ data, highlightedNodeID, compact = false }: Props) {
       ) : null}
 
       {width > 0 ? (
-        <View style={{ flex: 1, height: laidOut.chartHeight, marginHorizontal: columnGap }}>
+        <View
+          style={{
+            flex: 1,
+            height: laidOut.chartHeight,
+            marginHorizontal: columnGap,
+          }}
+        >
           <Svg width="100%" height={laidOut.chartHeight}>
             <Defs>
               {laidOut.links.map((link) => (

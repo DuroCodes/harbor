@@ -2,7 +2,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { surface, typo } from '@/theme/tokens';
 import { format } from '@/lib/format';
-import { accountDisplayName, type Account, type Institution } from '@/lib/types';
+import {
+  accountDisplayName,
+  type Account,
+  type Institution,
+} from '@/lib/types';
 
 type Props = {
   account: Account;
@@ -27,7 +31,9 @@ export function AccountRow({ account, institution }: Props) {
           </Text>
         ) : null}
         {account.mask ? (
-          <Text style={[styles.meta, typo.amount(11, '400')]}>{`••••${account.mask}`}</Text>
+          <Text
+            style={[styles.meta, typo.amount(11, '400')]}
+          >{`••••${account.mask}`}</Text>
         ) : null}
       </View>
     </View>

@@ -45,7 +45,9 @@ export default function ConnectScreen() {
             });
             router.back();
           } catch (err) {
-            setErrorMessage(err instanceof Error ? err.message : 'Could not connect.');
+            setErrorMessage(
+              err instanceof Error ? err.message : 'Could not connect.'
+            );
           } finally {
             setIsLoading(false);
           }
@@ -53,7 +55,11 @@ export default function ConnectScreen() {
       },
       onExit: (exit: LinkExit) => {
         if (exit.error?.displayMessage || exit.error?.errorMessage) {
-          setErrorMessage(exit.error.displayMessage ?? exit.error.errorMessage ?? 'Link closed.');
+          setErrorMessage(
+            exit.error.displayMessage ??
+              exit.error.errorMessage ??
+              'Link closed.'
+          );
         }
       },
       onEvent: () => {},
@@ -68,7 +74,9 @@ export default function ConnectScreen() {
       try {
         await openLink(linkToken);
       } catch (err) {
-        setErrorMessage(err instanceof Error ? err.message : 'Could not open Link.');
+        setErrorMessage(
+          err instanceof Error ? err.message : 'Could not open Link.'
+        );
       } finally {
         setIsLoading(false);
       }
@@ -77,12 +85,17 @@ export default function ConnectScreen() {
 
     setIsLoading(true);
     try {
-      const response = await plaidProxy.createLinkToken(app.proxyURL, app.proxyAPIKey);
+      const response = await plaidProxy.createLinkToken(
+        app.proxyURL,
+        app.proxyAPIKey
+      );
       setLinkToken(response.linkToken);
       setStatusMessage('Link is ready. Continue to choose your institution.');
       await openLink(response.linkToken);
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Could not create link token.');
+      setErrorMessage(
+        err instanceof Error ? err.message : 'Could not create link token.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -123,9 +136,15 @@ export default function ConnectScreen() {
                   lineHeight: 20,
                 }}
               >
-                {'Configure the Plaid proxy URL and API key in Settings before linking accounts.'}
+                {
+                  'Configure the Plaid proxy URL and API key in Settings before linking accounts.'
+                }
               </Text>
-              <Button label="Open Settings" variant="filled" onPress={openSettings} />
+              <Button
+                label="Open Settings"
+                variant="filled"
+                onPress={openSettings}
+              />
             </>
           ) : (
             <>

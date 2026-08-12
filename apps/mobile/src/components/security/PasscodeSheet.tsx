@@ -37,7 +37,12 @@ type Props = {
   onSaved: () => void;
 };
 
-export function PasscodeSheet({ isPresented, changing, onDismiss, onSaved }: Props) {
+export function PasscodeSheet({
+  isPresented,
+  changing,
+  onDismiss,
+  onSaved,
+}: Props) {
   const { width } = useWindowDimensions();
   const entry = useNativeState('');
   const [step, setStep] = useState<'enter' | 'confirm'>('enter');
@@ -107,7 +112,11 @@ export function PasscodeSheet({ isPresented, changing, onDismiss, onSaved }: Pro
             alignment="leading"
             modifiers={[
               padding({ all: 20 }),
-              frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }),
+              frame({
+                maxWidth: Infinity,
+                maxHeight: Infinity,
+                alignment: 'topLeading',
+              }),
               background(surface.canvas),
             ]}
           >
@@ -120,7 +129,10 @@ export function PasscodeSheet({ isPresented, changing, onDismiss, onSaved }: Pro
               />
               <Spacer />
               <Text
-                modifiers={[font({ size: 17, weight: 'semibold' }), foregroundStyle(surface.label)]}
+                modifiers={[
+                  font({ size: 17, weight: 'semibold' }),
+                  foregroundStyle(surface.label),
+                ]}
               >
                 {changing ? 'Change Passcode' : 'Set Passcode'}
               </Text>
@@ -134,8 +146,15 @@ export function PasscodeSheet({ isPresented, changing, onDismiss, onSaved }: Pro
               />
             </HStack>
 
-            <Text modifiers={[font({ size: 15 }), foregroundStyle(surface.labelMuted)]}>
-              {step === 'enter' ? 'Choose a 4–6 digit passcode' : 'Confirm passcode'}
+            <Text
+              modifiers={[
+                font({ size: 15 }),
+                foregroundStyle(surface.labelMuted),
+              ]}
+            >
+              {step === 'enter'
+                ? 'Choose a 4–6 digit passcode'
+                : 'Confirm passcode'}
             </Text>
 
             <TextField
@@ -159,7 +178,12 @@ export function PasscodeSheet({ isPresented, changing, onDismiss, onSaved }: Pro
             />
 
             {errorMessage ? (
-              <Text modifiers={[font({ size: 13 }), foregroundStyle(brand.expensePalette[0])]}>
+              <Text
+                modifiers={[
+                  font({ size: 13 }),
+                  foregroundStyle(brand.expensePalette[0]),
+                ]}
+              >
                 {errorMessage}
               </Text>
             ) : null}

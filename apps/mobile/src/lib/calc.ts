@@ -11,7 +11,8 @@ import type {
   NetWorthSummary,
 } from './types';
 
-const startOfMonth = (date: Date): Date => new Date(date.getFullYear(), date.getMonth(), 1);
+const startOfMonth = (date: Date): Date =>
+  new Date(date.getFullYear(), date.getMonth(), 1);
 
 const addMonths = (date: Date, months: number): Date =>
   new Date(date.getFullYear(), date.getMonth() + months, 1);
@@ -264,7 +265,8 @@ export const buildNetWorthSeries = (
 
   if (recorded.length >= 2) {
     const span =
-      (+new Date(recorded[recorded.length - 1].date) - +new Date(recorded[0].date)) /
+      (+new Date(recorded[recorded.length - 1].date) -
+        +new Date(recorded[0].date)) /
       (1000 * 60 * 60 * 24);
     // Enough real snapshots spanning multiple days — use them as-is.
     if (span >= 1) return recorded;
@@ -284,7 +286,9 @@ export const buildNetWorthSeries = (
   }
 
   // Overlay recorded points when present.
-  const recordedByDay = new Map(recorded.map((s) => [s.date.slice(0, 10), s.netWorth]));
+  const recordedByDay = new Map(
+    recorded.map((s) => [s.date.slice(0, 10), s.netWorth])
+  );
 
   const points: NetWorthSnapshot[] = [];
   let nw = currentNetWorth;

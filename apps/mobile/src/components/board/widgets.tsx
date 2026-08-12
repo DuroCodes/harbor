@@ -24,9 +24,14 @@ type Props = {
   equalHeight?: boolean;
 };
 
-export function WidgetView({ item, navigationEnabled = true, equalHeight = false }: Props) {
+export function WidgetView({
+  item,
+  navigationEnabled = true,
+  equalHeight = false,
+}: Props) {
   const app = useApp();
-  const isCompact = item.width === 'half' && WIDGET_META[item.kind].allowsHalfWidth;
+  const isCompact =
+    item.width === 'half' && WIDGET_META[item.kind].allowsHalfWidth;
   const recent = app.transactions.slice(0, 5);
 
   const openDestination = () => {
@@ -71,7 +76,10 @@ export function WidgetView({ item, navigationEnabled = true, equalHeight = false
 
   if (tappable) {
     return (
-      <Pressable onPress={openDestination} style={equalHeight ? { flex: 1 } : undefined}>
+      <Pressable
+        onPress={openDestination}
+        style={equalHeight ? { flex: 1 } : undefined}
+      >
         {content}
       </Pressable>
     );
@@ -90,7 +98,9 @@ const renderKind = (
     case 'netWorth':
       return <NetWorthHero netWorth={app.summary.netWorth} />;
     case 'netWorthChart':
-      return <NetWorthChart snapshots={app.netWorthHistory} compact={isCompact} />;
+      return (
+        <NetWorthChart snapshots={app.netWorthHistory} compact={isCompact} />
+      );
     case 'assets':
       return (
         <Assets
@@ -149,7 +159,12 @@ function SankeyWidget({
     <View style={compact ? { flex: 1 } : undefined}>
       <Text style={styles.sectionLabel}>Cash flow</Text>
       {data.isEmpty ? (
-        <Card style={{ padding: 16, height: compact ? theme.halfTileCardHeight : undefined }}>
+        <Card
+          style={{
+            padding: 16,
+            height: compact ? theme.halfTileCardHeight : undefined,
+          }}
+        >
           <Text style={styles.empty}>No activity this month.</Text>
         </Card>
       ) : (

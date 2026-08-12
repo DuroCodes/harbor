@@ -1,5 +1,12 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { Hairline } from '@/components/ui/Hairline';
 import { HeaderBackButton } from '@/components/ui/HeaderBackButton';
@@ -21,7 +28,9 @@ export default function AccountDetailScreen() {
         <Stack.Screen
           options={{
             title: 'Account',
-            headerLeft: () => <HeaderBackButton onPress={() => router.back()} />,
+            headerLeft: () => (
+              <HeaderBackButton onPress={() => router.back()} />
+            ),
           }}
         />
         <Text style={styles.muted}>Account not found.</Text>
@@ -29,10 +38,17 @@ export default function AccountDetailScreen() {
     );
   }
 
-  const institution = account.institutionID ? app.institutionsById[account.institutionID] : null;
-  const recent = app.transactions.filter((t) => t.accountID === account.id).slice(0, 12);
+  const institution = account.institutionID
+    ? app.institutionsById[account.institutionID]
+    : null;
+  const recent = app.transactions
+    .filter((t) => t.accountID === account.id)
+    .slice(0, 12);
 
-  const heroSubtitle = [institution?.name, account.mask ? `••••${account.mask}` : null]
+  const heroSubtitle = [
+    institution?.name,
+    account.mask ? `••••${account.mask}` : null,
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -90,10 +106,15 @@ export default function AccountDetailScreen() {
 
       <View style={styles.card}>
         {account.availableBalance != null ? (
-          <Row label="Available" value={format.money(account.availableBalance)} />
+          <Row
+            label="Available"
+            value={format.money(account.availableBalance)}
+          />
         ) : null}
         <Row label="Institution" value={institution?.name ?? '—'} />
-        {account.mask ? <Row label="Account" value={`••••${account.mask}`} /> : null}
+        {account.mask ? (
+          <Row label="Account" value={`••••${account.mask}`} />
+        ) : null}
       </View>
 
       {recent.length > 0 ? (
@@ -108,10 +129,14 @@ export default function AccountDetailScreen() {
                 >
                   <TransactionRow
                     transaction={txn}
-                    category={txn.categoryID ? app.categoriesById[txn.categoryID] : null}
+                    category={
+                      txn.categoryID ? app.categoriesById[txn.categoryID] : null
+                    }
                   />
                 </Pressable>
-                {index < recent.length - 1 ? <Hairline leadingInset={50} /> : null}
+                {index < recent.length - 1 ? (
+                  <Hairline leadingInset={50} />
+                ) : null}
               </View>
             ))}
           </View>

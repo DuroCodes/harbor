@@ -123,12 +123,15 @@ export const defaultLayout = (): DashboardWidgetItem[] => [
   createWidget('recentActivity', 'full'),
 ];
 
-export const packRows = (widgets: DashboardWidgetItem[]): DashboardWidgetItem[][] => {
+export const packRows = (
+  widgets: DashboardWidgetItem[]
+): DashboardWidgetItem[][] => {
   const result: DashboardWidgetItem[][] = [];
   let pendingHalf: DashboardWidgetItem | undefined;
 
   for (const widget of widgets) {
-    const useHalf = widget.width === 'half' && WIDGET_META[widget.kind].allowsHalfWidth;
+    const useHalf =
+      widget.width === 'half' && WIDGET_META[widget.kind].allowsHalfWidth;
     if (!useHalf) {
       if (pendingHalf) {
         result.push([pendingHalf]);
@@ -146,7 +149,9 @@ export const packRows = (widgets: DashboardWidgetItem[]): DashboardWidgetItem[][
   return result;
 };
 
-export const availableToAdd = (widgets: DashboardWidgetItem[]): DashboardWidgetKind[] =>
+export const availableToAdd = (
+  widgets: DashboardWidgetItem[]
+): DashboardWidgetKind[] =>
   ALL_KINDS.filter((kind) => !widgets.some((w) => w.kind === kind));
 
 export const addWidget = (
@@ -157,10 +162,15 @@ export const addWidget = (
   return [...widgets, createWidget(kind)];
 };
 
-export const removeWidget = (widgets: DashboardWidgetItem[], id: string): DashboardWidgetItem[] =>
-  widgets.filter((w) => w.id !== id);
+export const removeWidget = (
+  widgets: DashboardWidgetItem[],
+  id: string
+): DashboardWidgetItem[] => widgets.filter((w) => w.id !== id);
 
-export const toggleWidth = (widgets: DashboardWidgetItem[], id: string): DashboardWidgetItem[] =>
+export const toggleWidth = (
+  widgets: DashboardWidgetItem[],
+  id: string
+): DashboardWidgetItem[] =>
   widgets.map((w) => {
     if (w.id !== id) return w;
     if (!WIDGET_META[w.kind].allowsHalfWidth) return w;
@@ -217,7 +227,9 @@ export const loadWidgets = async (): Promise<DashboardWidgetItem[]> => {
   }
 };
 
-export const persistWidgets = async (widgets: DashboardWidgetItem[]): Promise<void> => {
+export const persistWidgets = async (
+  widgets: DashboardWidgetItem[]
+): Promise<void> => {
   try {
     await storage.setItem(STORAGE_KEY, JSON.stringify(widgets));
   } catch {

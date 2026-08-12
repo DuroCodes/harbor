@@ -10,7 +10,11 @@ type Props = {
 };
 
 export function Card({ children, padding = 0, style }: Props) {
-  return <View style={[layout.card, padding > 0 ? { padding } : null, style]}>{children}</View>;
+  return (
+    <View style={[layout.card, padding > 0 ? { padding } : null, style]}>
+      {children}
+    </View>
+  );
 }
 
 export function PaddedCard({ children, style }: Omit<Props, 'padding'>) {

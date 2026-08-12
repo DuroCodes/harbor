@@ -1,6 +1,7 @@
 export type AccountGroup = 'cash' | 'credit' | 'investments' | 'other';
 
-export type AccountKind = 'depository' | 'credit' | 'investment' | 'loan' | 'brokerage' | 'other';
+export type AccountKind =
+  'depository' | 'credit' | 'investment' | 'loan' | 'brokerage' | 'other';
 
 export type AccountSubtype =
   | 'checking'
@@ -160,7 +161,10 @@ export interface CategoryBudgetInput {
   monthlyLimit: number;
 }
 
-export const ACCOUNT_GROUP_META: Record<AccountGroup, { title: string; systemImage: string }> = {
+export const ACCOUNT_GROUP_META: Record<
+  AccountGroup,
+  { title: string; systemImage: string }
+> = {
   cash: { title: 'Cash', systemImage: 'banknote' },
   credit: { title: 'Credit', systemImage: 'creditcard' },
   investments: {
@@ -194,11 +198,14 @@ export const ACCOUNT_SUBTYPE_DISPLAY: Record<AccountSubtype, string> = {
   other: 'Other',
 };
 
-export const accountGroup = (account: Account): AccountGroup => ACCOUNT_KIND_GROUP[account.kind];
+export const accountGroup = (account: Account): AccountGroup =>
+  ACCOUNT_KIND_GROUP[account.kind];
 
 export const accountDisplayName = (account: Account): string => {
   const raw =
-    account.officialName && account.officialName.length > 0 ? account.officialName : account.name;
+    account.officialName && account.officialName.length > 0
+      ? account.officialName
+      : account.name;
   return prettifyDisplayName(raw);
 };
 
@@ -208,7 +215,10 @@ export const prettifyDisplayName = (name: string): string => {
   if (letters.length < 3 || letters !== letters.toUpperCase()) return name;
   return name
     .toLowerCase()
-    .replace(/(^|[\s/._-])([a-z])/g, (_, sep: string, c: string) => sep + c.toUpperCase());
+    .replace(
+      /(^|[\s/._-])([a-z])/g,
+      (_, sep: string, c: string) => sep + c.toUpperCase()
+    );
 };
 
 export const transactionDisplayMerchant = (txn: Transaction): string => {

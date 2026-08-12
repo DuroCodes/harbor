@@ -29,7 +29,9 @@ export default function TransactionDetailScreen() {
         <Stack.Screen
           options={{
             title: 'Transaction',
-            headerLeft: () => <HeaderBackButton onPress={() => router.back()} />,
+            headerLeft: () => (
+              <HeaderBackButton onPress={() => router.back()} />
+            ),
           }}
         />
         <Text style={styles.muted}>This transaction could not be found.</Text>
@@ -37,8 +39,12 @@ export default function TransactionDetailScreen() {
     );
   }
 
-  const category = transaction.categoryID ? app.categoriesById[transaction.categoryID] : null;
-  const account = transaction.accountID ? app.accountsById[transaction.accountID] : null;
+  const category = transaction.categoryID
+    ? app.categoriesById[transaction.categoryID]
+    : null;
+  const account = transaction.accountID
+    ? app.accountsById[transaction.accountID]
+    : null;
   const signed = signedAmountForDisplay(transaction.amount);
   const merchant = transactionDisplayMerchant(transaction);
 
@@ -59,19 +65,28 @@ export default function TransactionDetailScreen() {
         <Text
           style={[
             typo.heroBalance,
-            { color: signed >= 0 ? theme.positive : surface.label, fontSize: 34 },
+            {
+              color: signed >= 0 ? theme.positive : surface.label,
+              fontSize: 34,
+            },
           ]}
           numberOfLines={1}
           adjustsFontSizeToFit
         >
           {format.signedMoney(signed)}
         </Text>
-        <Text style={styles.heroMeta}>{format.mediumDate(transaction.date)}</Text>
+        <Text style={styles.heroMeta}>
+          {format.mediumDate(transaction.date)}
+        </Text>
       </View>
 
       <View style={styles.card}>
-        {transaction.status === 'pending' ? <Row label="Status" value="Pending" accent /> : null}
-        {account ? <Row label="Account" value={accountDisplayName(account)} /> : null}
+        {transaction.status === 'pending' ? (
+          <Row label="Status" value="Pending" accent />
+        ) : null}
+        {account ? (
+          <Row label="Account" value={accountDisplayName(account)} />
+        ) : null}
         {category ? <Row label="Category" value={category.name} /> : null}
         {transaction.name && transaction.name !== merchant ? (
           <Row label="Description" value={transaction.name} />
@@ -96,11 +111,22 @@ export default function TransactionDetailScreen() {
   );
 }
 
-function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Row({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.value, accent ? { color: brand.accent } : null]} numberOfLines={2}>
+      <Text
+        style={[styles.value, accent ? { color: brand.accent } : null]}
+        numberOfLines={2}
+      >
         {value}
       </Text>
     </View>

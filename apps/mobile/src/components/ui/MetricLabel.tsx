@@ -9,7 +9,12 @@ type Props = {
   positive?: boolean;
 };
 
-export function MetricLabel({ title, value, emphasis = false, positive = false }: Props) {
+export function MetricLabel({
+  title,
+  value,
+  emphasis = false,
+  positive = false,
+}: Props) {
   return (
     <View style={styles.wrap}>
       <Text style={styles.title}>{title}</Text>

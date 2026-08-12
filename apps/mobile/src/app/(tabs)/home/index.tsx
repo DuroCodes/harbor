@@ -13,7 +13,11 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -34,7 +38,10 @@ import { GlassChrome } from '@/components/ui/GlassButton';
 import { brand, surface, theme, layout } from '@/theme/tokens';
 import { useApp } from '@/context/app';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -74,7 +81,10 @@ const destinationIndex = (
   const others = widgets
     .filter((w) => w.id !== excluding)
     .map((w) => ({ id: w.id, frame: frames[w.id] }))
-    .filter((o): o is { id: string; frame: SlotFrame } => !!o.frame && o.frame.width > 0);
+    .filter(
+      (o): o is { id: string; frame: SlotFrame } =>
+        !!o.frame && o.frame.width > 0
+    );
 
   if (others.length === 0) return 0;
 
@@ -90,7 +100,8 @@ const destinationIndex = (
   for (const o of sorted) {
     const cx = o.frame.x + o.frame.width / 2;
     const cy = o.frame.y + o.frame.height / 2;
-    const sameRow = Math.abs(pointY - cy) <= Math.max(o.frame.height * 0.55, 28);
+    const sameRow =
+      Math.abs(pointY - cy) <= Math.max(o.frame.height * 0.55, 28);
     if (sameRow) {
       if (pointX > cx) dest += 1;
       else break;
@@ -159,7 +170,9 @@ export default function HomeScreen() {
           grabOffsetRef.current = { x: fingerX - x, y: fingerY - y };
           dragX.value = x - boardX;
           dragY.value = y - boardY;
-          liveIndexRef.current = widgetsRef.current.findIndex((w) => w.id === id);
+          liveIndexRef.current = widgetsRef.current.findIndex(
+            (w) => w.id === id
+          );
           draggingIDRef.current = id;
           setDragSize({ width, height });
           setDraggingID(id);
@@ -169,7 +182,12 @@ export default function HomeScreen() {
             if (otherId === id || !node) continue;
             node.measureInWindow((ox, oy, ow, oh) => {
               if (ow > 0 && oh > 0) {
-                framesRef.current[otherId] = { x: ox, y: oy, width: ow, height: oh };
+                framesRef.current[otherId] = {
+                  x: ox,
+                  y: oy,
+                  width: ow,
+                  height: oh,
+                };
               }
             });
           }
@@ -184,11 +202,19 @@ export default function HomeScreen() {
       const id = draggingIDRef.current;
       if (!id) return;
 
-      dragX.value = absoluteX - grabOffsetRef.current.x - boardOriginRef.current.x;
-      dragY.value = absoluteY - grabOffsetRef.current.y - boardOriginRef.current.y;
+      dragX.value =
+        absoluteX - grabOffsetRef.current.x - boardOriginRef.current.x;
+      dragY.value =
+        absoluteY - grabOffsetRef.current.y - boardOriginRef.current.y;
 
       const widgets = widgetsRef.current;
-      const dest = destinationIndex(absoluteX, absoluteY, widgets, id, framesRef.current);
+      const dest = destinationIndex(
+        absoluteX,
+        absoluteY,
+        widgets,
+        id,
+        framesRef.current
+      );
       if (liveIndexRef.current === dest) return;
 
       const next = moveWidgetToIndex(widgets, id, dest);
@@ -215,7 +241,11 @@ export default function HomeScreen() {
   }, [app]);
 
   const floatingStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: dragX.value }, { translateY: dragY.value }, { scale: 1.03 }],
+    transform: [
+      { translateX: dragX.value },
+      { translateY: dragY.value },
+      { scale: 1.03 },
+    ],
   }));
 
   const draggingItem = useMemo(
@@ -227,7 +257,9 @@ export default function HomeScreen() {
   const bottomPad = Math.max(insets.bottom, 12) + 96;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: surface.canvas }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: surface.canvas }}
+    >
       <Stack.Toolbar placement="left" tintColor={brand.accent}>
         {isEditing ? (
           <Stack.Toolbar.Button
@@ -312,7 +344,12 @@ export default function HomeScreen() {
                         const node = slotRefs.current[item.id];
                         node?.measureInWindow((x, y, width, height) => {
                           if (width > 0 && height > 0) {
-                            framesRef.current[item.id] = { x, y, width, height };
+                            framesRef.current[item.id] = {
+                              x,
+                              y,
+                              width,
+                              height,
+                            };
                           }
                         });
                       }}
@@ -353,7 +390,11 @@ export default function HomeScreen() {
               { width: dragSize.width, height: dragSize.height },
             ]}
           >
-            <WidgetView item={draggingItem} navigationEnabled={false} equalHeight />
+            <WidgetView
+              item={draggingItem}
+              navigationEnabled={false}
+              equalHeight
+            />
           </Animated.View>
         ) : null}
 
@@ -436,7 +477,11 @@ function WidgetSlot({
     <GestureDetector gesture={dragGesture}>
       <View style={{ flex: equalHeight ? 1 : undefined }}>
         <Animated.View style={animStyle}>
-          <WidgetView item={item} navigationEnabled={!isEditing} equalHeight={equalHeight} />
+          <WidgetView
+            item={item}
+            navigationEnabled={!isEditing}
+            equalHeight={equalHeight}
+          />
         </Animated.View>
 
         {isEditing && !isDragging ? (
@@ -456,7 +501,9 @@ function WidgetSlot({
             onPress={onResize}
             style={styles.resizeBtn}
             accessibilityLabel={
-              item.width === 'half' ? 'Expand to full width' : 'Shrink to half width'
+              item.width === 'half'
+                ? 'Expand to full width'
+                : 'Shrink to half width'
             }
           >
             <GlassChrome shape="capsule" />
@@ -470,7 +517,12 @@ function WidgetSlot({
 function ConnectPrompt({ onConnect }: { onConnect: () => void }) {
   return (
     <View style={styles.prompt}>
-      <SymbolView name={'anchor' as any} size={40} tintColor={brand.accent} weight="light" />
+      <SymbolView
+        name={'anchor' as any}
+        size={40}
+        tintColor={brand.accent}
+        weight="light"
+      />
       <Text style={styles.promptTitle}>{brand.name}</Text>
       <Text style={styles.promptSub}>{brand.tagline}</Text>
       <Text style={styles.promptBody}>
@@ -486,7 +538,12 @@ function ConnectPrompt({ onConnect }: { onConnect: () => void }) {
 function EmptyBoard({ onAdd }: { onAdd: () => void }) {
   return (
     <View style={styles.prompt}>
-      <SymbolView name="square.grid.2x2" size={36} tintColor={surface.labelMuted} weight="light" />
+      <SymbolView
+        name="square.grid.2x2"
+        size={36}
+        tintColor={surface.labelMuted}
+        weight="light"
+      />
       <Text style={styles.promptTitle}>Your home screen is empty</Text>
       <Text style={styles.promptBody}>
         Add widgets for net worth, accounts, spending, and more.
@@ -524,14 +581,22 @@ function AddWidgetSheet({
           <Text style={styles.navTitle}>Add Widget</Text>
           <View style={{ width: 48 }} />
         </View>
-        <ScrollView contentContainerStyle={{ padding: 20, gap: 8, paddingBottom: 40 }}>
+        <ScrollView
+          contentContainerStyle={{ padding: 20, gap: 8, paddingBottom: 40 }}
+        >
           {available.length === 0 ? (
-            <Text style={styles.promptBody}>Every widget is already on your home screen.</Text>
+            <Text style={styles.promptBody}>
+              Every widget is already on your home screen.
+            </Text>
           ) : (
             available.map((kind) => {
               const meta = WIDGET_META[kind];
               return (
-                <Pressable key={kind} style={styles.addRow} onPress={() => onAdd(kind)}>
+                <Pressable
+                  key={kind}
+                  style={styles.addRow}
+                  onPress={() => onAdd(kind)}
+                >
                   <SymbolView
                     name={meta.systemImage as any}
                     size={18}
@@ -540,10 +605,18 @@ function AddWidgetSheet({
                     style={{ width: 28 }}
                   />
                   <View style={{ flex: 1 }}>
-                    <Text style={{ color: surface.label, fontSize: 16 }}>{meta.title}</Text>
-                    <Text style={{ color: surface.labelMuted, fontSize: 12 }}>{meta.detail}</Text>
+                    <Text style={{ color: surface.label, fontSize: 16 }}>
+                      {meta.title}
+                    </Text>
+                    <Text style={{ color: surface.labelMuted, fontSize: 12 }}>
+                      {meta.detail}
+                    </Text>
                   </View>
-                  <SymbolView name="plus.circle.fill" size={22} tintColor={brand.accent} />
+                  <SymbolView
+                    name="plus.circle.fill"
+                    size={22}
+                    tintColor={brand.accent}
+                  />
                 </Pressable>
               );
             })

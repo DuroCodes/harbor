@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Path, Stop, Line, Text as SvgText } from 'react-native-svg';
+import Svg, {
+  Defs,
+  LinearGradient,
+  Path,
+  Stop,
+  Line,
+  Text as SvgText,
+} from 'react-native-svg';
 
 import { Card } from '@/components/ui/Card';
 import { brand, surface, theme } from '@/theme/tokens';
@@ -14,7 +21,11 @@ type Props = {
   detailed?: boolean;
 };
 
-export function NetWorthChart({ snapshots, compact = false, detailed = false }: Props) {
+export function NetWorthChart({
+  snapshots,
+  compact = false,
+  detailed = false,
+}: Props) {
   const chartSnapshots = useMemo(
     () => [...snapshots].sort((a, b) => +new Date(a.date) - +new Date(b.date)),
     [snapshots]
@@ -168,7 +179,13 @@ export function NetWorthChart({ snapshots, compact = false, detailed = false }: 
                   y={height - 6}
                   fill={surface.labelMuted}
                   fontSize={10}
-                  textAnchor={i === 0 ? 'start' : i === xLabels.length - 1 ? 'end' : 'middle'}
+                  textAnchor={
+                    i === 0
+                      ? 'start'
+                      : i === xLabels.length - 1
+                        ? 'end'
+                        : 'middle'
+                  }
                 >
                   {formatX(tick.date)}
                 </SvgText>

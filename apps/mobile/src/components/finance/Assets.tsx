@@ -15,7 +15,13 @@ type Props = {
   showsHeader?: boolean;
 };
 
-export function Assets({ cash, investments, credit, compact = false, showsHeader = true }: Props) {
+export function Assets({
+  cash,
+  investments,
+  credit,
+  compact = false,
+  showsHeader = true,
+}: Props) {
   return (
     <View style={[styles.wrap, compact && styles.wrapCompact]}>
       {showsHeader ? <Text style={styles.header}>Assets</Text> : null}
@@ -30,7 +36,11 @@ export function Assets({ cash, investments, credit, compact = false, showsHeader
         </View>
       ) : (
         <Card padding={4}>
-          <FullRow title="Cash" systemImage={ACCOUNT_GROUP_META.cash.systemImage} value={cash} />
+          <FullRow
+            title="Cash"
+            systemImage={ACCOUNT_GROUP_META.cash.systemImage}
+            value={cash}
+          />
           <Hairline leadingInset={52} />
           <FullRow
             title="Invested"
@@ -81,7 +91,10 @@ function CompactRow({ title, value }: { title: string; value: number }) {
       <Text style={styles.compactTitle} numberOfLines={1}>
         {title}
       </Text>
-      <Text style={[typo.amount(12), styles.amount, styles.compactAmount]} numberOfLines={1}>
+      <Text
+        style={[typo.amount(12), styles.amount, styles.compactAmount]}
+        numberOfLines={1}
+      >
         {format.money(value)}
       </Text>
     </View>

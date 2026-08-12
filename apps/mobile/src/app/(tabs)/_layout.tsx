@@ -39,25 +39,44 @@ export default function TabLayout() {
     >
       <NativeTabs.Trigger name="home" disableTransparentOnScrollEdge>
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'house', selected: 'house.fill' }}
+          md="home"
+        />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="cash-flow" hidden={!hasAccounts} disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger
+        name="cash-flow"
+        hidden={!hasAccounts}
+        disableTransparentOnScrollEdge
+      >
         <NativeTabs.Trigger.Label>Cash Flow</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="chart.bar" md="bar_chart" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="activity" hidden={!hasAccounts} disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger
+        name="activity"
+        hidden={!hasAccounts}
+        disableTransparentOnScrollEdge
+      >
         <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="list.bullet" md="list" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="accounts" hidden={!hasAccounts} disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger
+        name="accounts"
+        hidden={!hasAccounts}
+        disableTransparentOnScrollEdge
+      >
         <NativeTabs.Trigger.Label>Accounts</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="building.columns" md="account_balance" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="budgets" hidden={!hasAccounts} disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger
+        name="budgets"
+        hidden={!hasAccounts}
+        disableTransparentOnScrollEdge
+      >
         <NativeTabs.Trigger.Label>Budgets</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="chart.bar.doc.horizontal" md="pie_chart" />
       </NativeTabs.Trigger>

@@ -27,7 +27,9 @@ export function RecentTxns({
     <View style={styles.wrap}>
       {showsHeader ? (
         <Pressable onPress={onHeaderTap} disabled={!onHeaderTap}>
-          <Text style={[styles.header, { marginBottom: compact ? 8 : 12 }]}>Recent</Text>
+          <Text style={[styles.header, { marginBottom: compact ? 8 : 12 }]}>
+            Recent
+          </Text>
         </Pressable>
       ) : null}
 
@@ -49,7 +51,9 @@ export function RecentTxns({
               >
                 <TransactionRow
                   transaction={txn}
-                  category={txn.categoryID ? categoriesById[txn.categoryID] : null}
+                  category={
+                    txn.categoryID ? categoriesById[txn.categoryID] : null
+                  }
                 />
               </Pressable>
               {index < transactions.length - 1 ? (

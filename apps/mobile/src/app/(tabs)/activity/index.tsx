@@ -1,7 +1,14 @@
 import { SymbolView } from 'expo-symbols';
 import { Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import {
   ActivityFilterChips,
@@ -17,7 +24,9 @@ import { accountDisplayName, transactionDisplayMerchant } from '@/lib/types';
 export default function ActivityScreen() {
   const app = useApp();
   const [searchText, setSearchText] = useState('');
-  const [filters, setFilters] = useState<ActivityFilters>(defaultActivityFilters);
+  const [filters, setFilters] = useState<ActivityFilters>(
+    defaultActivityFilters
+  );
 
   const filtered = useMemo(() => {
     let items = app.transactions;
@@ -63,14 +72,21 @@ export default function ActivityScreen() {
       items = items.filter((t) => {
         const cat = t.categoryID ? app.categoriesById[t.categoryID] : null;
         if (filters.kind === 'transfers') return !!cat?.isTransfer;
-        if (filters.kind === 'income') return !!cat?.isIncome && !cat?.isTransfer;
+        if (filters.kind === 'income')
+          return !!cat?.isIncome && !cat?.isTransfer;
         // spending: expense categories (not income, not transfer)
         return !!cat && !cat.isIncome && !cat.isTransfer;
       });
     }
 
     return items;
-  }, [app.transactions, app.categoriesById, app.accountsById, searchText, filters]);
+  }, [
+    app.transactions,
+    app.categoriesById,
+    app.accountsById,
+    searchText,
+    filters,
+  ]);
 
   return (
     <View style={layout.screen}>
@@ -132,10 +148,15 @@ export default function ActivityScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <Pressable style={styles.row} onPress={() => app.openTransaction(item.id)}>
+          <Pressable
+            style={styles.row}
+            onPress={() => app.openTransaction(item.id)}
+          >
             <TransactionRow
               transaction={item}
-              category={item.categoryID ? app.categoriesById[item.categoryID] : null}
+              category={
+                item.categoryID ? app.categoriesById[item.categoryID] : null
+              }
             />
           </Pressable>
         )}

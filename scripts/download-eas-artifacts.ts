@@ -21,7 +21,9 @@ type EasBuild = {
 const [, , buildsPath, outDir] = process.argv;
 
 if (!buildsPath || !outDir) {
-  console.error('usage: bun scripts/download-eas-artifacts.ts <builds.json> <outDir>');
+  console.error(
+    'usage: bun scripts/download-eas-artifacts.ts <builds.json> <outDir>'
+  );
   process.exit(1);
 }
 
@@ -34,9 +36,12 @@ await mkdir(outDir, { recursive: true });
 let downloaded = 0;
 
 for (const build of builds) {
-  const url = build.artifacts?.applicationArchiveUrl ?? build.artifacts?.buildUrl;
+  const url =
+    build.artifacts?.applicationArchiveUrl ?? build.artifacts?.buildUrl;
   if (!url) {
-    console.warn(`skip ${build.id ?? '?'}: no artifact url (status=${build.status})`);
+    console.warn(
+      `skip ${build.id ?? '?'}: no artifact url (status=${build.status})`
+    );
     continue;
   }
   if (build.status && build.status !== 'FINISHED') {
@@ -45,7 +50,8 @@ for (const build of builds) {
   }
 
   const platform = (build.platform ?? 'unknown').toLowerCase();
-  const ext = platform === 'ios' ? 'ipa' : platform === 'android' ? 'apk' : 'bin';
+  const ext =
+    platform === 'ios' ? 'ipa' : platform === 'android' ? 'apk' : 'bin';
   const filename = `harbor-${platform}.${ext}`;
   const dest = path.join(outDir, filename);
 

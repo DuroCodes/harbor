@@ -89,14 +89,19 @@ const plaid = async (env: Env, path: string, body: Record<string, unknown>) => {
   const data = (await response.json()) as Record<string, unknown>;
   if (!response.ok) {
     const message =
-      (data?.error_message as string) || (data?.error_code as string) || 'Plaid request failed';
+      (data?.error_message as string) ||
+      (data?.error_code as string) ||
+      'Plaid request failed';
     throw new Error(message);
   }
   return data;
 };
 
 const createLinkToken = async (env: Env) => {
-  const daysRequested = Math.min(Math.max(Number(env.PLAID_DAYS_REQUESTED) || 730, 30), 730);
+  const daysRequested = Math.min(
+    Math.max(Number(env.PLAID_DAYS_REQUESTED) || 730, 30),
+    730
+  );
 
   const body: Record<string, unknown> = {
     client_name: 'Harbor',
@@ -150,7 +155,9 @@ const exchangePublicToken = async (request: Request, env: Env) => {
   const accounts = (accountsData.accounts as unknown[]) || [];
   return json({
     itemID,
-    accounts: accounts.map((a) => mapAccount(a as Parameters<typeof mapAccount>[0])),
+    accounts: accounts.map((a) =>
+      mapAccount(a as Parameters<typeof mapAccount>[0])
+    ),
   });
 };
 
@@ -187,9 +194,15 @@ const syncItem = async (request: Request, env: Env) => {
   const removed = (txData.removed as { transaction_id: string }[]) || [];
 
   return json({
-    accounts: accounts.map((a) => mapAccount(a as Parameters<typeof mapAccount>[0])),
-    added: added.map((t) => mapTransaction(t as Parameters<typeof mapTransaction>[0])),
-    modified: modified.map((t) => mapTransaction(t as Parameters<typeof mapTransaction>[0])),
+    accounts: accounts.map((a) =>
+      mapAccount(a as Parameters<typeof mapAccount>[0])
+    ),
+    added: added.map((t) =>
+      mapTransaction(t as Parameters<typeof mapTransaction>[0])
+    ),
+    modified: modified.map((t) =>
+      mapTransaction(t as Parameters<typeof mapTransaction>[0])
+    ),
     removed: removed.map((r) => ({ transactionID: r.transaction_id })),
     nextCursor: txData.next_cursor,
     hasMore: !!txData.has_more,
@@ -213,7 +226,10 @@ const removeItem = async (request: Request, env: Env) => {
   return json({ ok: true });
 };
 
-const loadItem = async (env: Env, itemID: string): Promise<StoredItem | null> => {
+const loadItem = async (
+  env: Env,
+  itemID: string
+): Promise<StoredItem | null> => {
   const raw = await env.ITEMS.get(itemKey(itemID));
   return raw ? (JSON.parse(raw) as StoredItem) : null;
 };
@@ -240,7 +256,11 @@ const corsHeaders = () => ({
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 });
 
-const json = (body: unknown, status = 200, extraHeaders: Record<string, string> = {}) =>
+const json = (
+  body: unknown,
+  status = 200,
+  extraHeaders: Record<string, string> = {}
+) =>
   new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -250,4 +270,5 @@ const json = (body: unknown, status = 200, extraHeaders: Record<string, string> 
     },
   });
 
-const error = (message: string, status: number) => json({ error: message }, status);
+const error = (message: string, status: number) =>
+  json({ error: message }, status);

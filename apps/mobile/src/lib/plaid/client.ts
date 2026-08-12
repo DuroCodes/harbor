@@ -50,7 +50,10 @@ const post = async <T>(
 
   let url: URL;
   try {
-    url = new URL(path, config.baseURL.endsWith('/') ? config.baseURL : `${config.baseURL}/`);
+    url = new URL(
+      path,
+      config.baseURL.endsWith('/') ? config.baseURL : `${config.baseURL}/`
+    );
   } catch {
     throw new PlaidProxyError('Invalid proxy URL.', 'invalidURL');
   }
@@ -70,7 +73,10 @@ const post = async <T>(
     json = text ? JSON.parse(text) : null;
   } catch {
     if (!response.ok) {
-      throw new PlaidProxyError(`Proxy request failed (${response.status}).`, 'http');
+      throw new PlaidProxyError(
+        `Proxy request failed (${response.status}).`,
+        'http'
+      );
     }
     throw new PlaidProxyError('Could not read proxy response.', 'decoding');
   }
@@ -89,8 +95,17 @@ const post = async <T>(
 export const plaidProxy = {
   createLinkToken: (baseURL?: string, apiKey?: string) =>
     post<CreateLinkTokenResponse>('/link/token/create', {}, baseURL, apiKey),
-  exchangePublicToken: (request: ExchangePublicTokenRequest, baseURL?: string, apiKey?: string) =>
-    post<ExchangePublicTokenResponse>('/item/public_token/exchange', request, baseURL, apiKey),
+  exchangePublicToken: (
+    request: ExchangePublicTokenRequest,
+    baseURL?: string,
+    apiKey?: string
+  ) =>
+    post<ExchangePublicTokenResponse>(
+      '/item/public_token/exchange',
+      request,
+      baseURL,
+      apiKey
+    ),
   syncItem: (request: SyncItemRequest, baseURL?: string, apiKey?: string) =>
     post<SyncItemResponse>('/item/sync', request, baseURL, apiKey),
   removeItem: (request: RemoveItemRequest, baseURL?: string, apiKey?: string) =>

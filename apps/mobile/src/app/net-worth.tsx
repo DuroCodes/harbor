@@ -16,11 +16,14 @@ export default function NetWorthDetailScreen() {
 
   const stats = useMemo(() => {
     if (history.length < 2) return null;
-    const sorted = [...history].sort((a, b) => +new Date(a.date) - +new Date(b.date));
+    const sorted = [...history].sort(
+      (a, b) => +new Date(a.date) - +new Date(b.date)
+    );
     const first = sorted[0];
     const last = sorted[sorted.length - 1];
     const change = last.netWorth - first.netWorth;
-    const changePct = first.netWorth !== 0 ? (change / Math.abs(first.netWorth)) * 100 : 0;
+    const changePct =
+      first.netWorth !== 0 ? (change / Math.abs(first.netWorth)) * 100 : 0;
     const values = sorted.map((s) => s.netWorth);
     const high = Math.max(...values);
     const low = Math.min(...values);

@@ -133,7 +133,10 @@ type AppContextValue = {
   toCashFlowInputs: (txns?: Transaction[]) => ReturnType<typeof mapTxnInputs>;
 };
 
-const mapTxnInputs = (transactions: Transaction[], categoriesById: Record<string, Category>) =>
+const mapTxnInputs = (
+  transactions: Transaction[],
+  categoriesById: Record<string, Category>
+) =>
   transactions.map((t) => {
     const cat = t.categoryID ? categoriesById[t.categoryID] : undefined;
     return {
@@ -160,7 +163,9 @@ const ensureCategories = (existing: Category[]): Category[] => {
     return {
       ...c,
       systemImage: def.systemImage,
-      plaidPrimaryKeys: c.plaidPrimaryKeys?.length ? c.plaidPrimaryKeys : def.plaidPrimaryKeys,
+      plaidPrimaryKeys: c.plaidPrimaryKeys?.length
+        ? c.plaidPrimaryKeys
+        : def.plaidPrimaryKeys,
       isIncome: def.isIncome,
       isTransfer: def.isTransfer,
     };
@@ -188,7 +193,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [snapshots, setSnapshots] = useState<NetWorthSnapshot[]>([]);
-  const [widgets, setWidgets] = useState<DashboardWidgetItem[]>(defaultLayout());
+  const [widgets, setWidgets] =
+    useState<DashboardWidgetItem[]>(defaultLayout());
   const [proxyURL, setProxyURL] = useState('');
   const [proxyAPIKey, setProxyAPIKey] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -204,19 +210,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const hasAccounts = accounts.some((a) => a.isActive && !a.isHidden);
   const proxyConfigured = isProxyConfigured(proxyURL, proxyAPIKey);
 
-  const refreshLockState = useCallback(async (mode: 'boot' | 'settings' = 'settings') => {
-    const { loadAppLockState } = await import('@/lib/lock');
-    const snap = await loadAppLockState();
-    setLockEnabled(snap.hasPasscode);
-    setLockBiometricsFlag(snap.biometricsEnabled);
-    setLockBiometricsAvailable(snap.biometricsAvailable);
-    setLockBiometricsName(snap.biometricsName);
-    if (mode === 'boot') {
-      setLockUnlocked(snap.isUnlocked);
-    } else if (!snap.hasPasscode) {
-      setLockUnlocked(true);
-    }
-  }, []);
+  const refreshLockState = useCallback(
+    async (mode: 'boot' | 'settings' = 'settings') => {
+      const { loadAppLockState } = await import('@/lib/lock');
+      const snap = await loadAppLockState();
+      setLockEnabled(snap.hasPasscode);
+      setLockBiometricsFlag(snap.biometricsEnabled);
+      setLockBiometricsAvailable(snap.biometricsAvailable);
+      setLockBiometricsName(snap.biometricsName);
+      if (mode === 'boot') {
+        setLockUnlocked(snap.isUnlocked);
+      } else if (!snap.hasPasscode) {
+        setLockUnlocked(true);
+      }
+    },
+    []
+  );
 
   const unlockApp = useCallback(() => {
     setLockUnlocked(true);
@@ -268,7 +277,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await storage.removeItem(PROXY_KEY_KEY);
       }
 
-      const [w, raw] = await Promise.all([loadWidgets(), storage.getItem(DATA_KEY)]);
+      const [w, raw] = await Promise.all([
+        loadWidgets(),
+        storage.getItem(DATA_KEY),
+      ]);
       setWidgets(w);
       if (url) setProxyURL(url);
       if (key) setProxyAPIKey(key);
@@ -358,15 +370,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
           amount: t.amount,
           status: t.status,
           isRemoved: t.isRemoved,
-          isTransfer: t.categoryID ? (categoriesById[t.categoryID]?.isTransfer ?? false) : false,
+          isTransfer: t.categoryID
+            ? (categoriesById[t.categoryID]?.isTransfer ?? false)
+            : false,
         })),
         90
       ),
     [summary.netWorth, snapshots, transactions, categoriesById]
   );
 
-  const cashFlow = useMemo(() => monthlyCashFlow(txnInputs, new Date()), [txnInputs]);
-  const sankeyData = useMemo(() => cashFlowSankey(txnInputs, new Date()), [txnInputs]);
+  const cashFlow = useMemo(
+    () => monthlyCashFlow(txnInputs, new Date()),
+    [txnInputs]
+  );
+  const sankeyData = useMemo(
+    () => cashFlowSankey(txnInputs, new Date()),
+    [txnInputs]
+  );
 
   const budgetProgress = useMemo(() => {
     const budgets = categories
@@ -400,8 +420,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         investments: s.investments,
         credit: s.credit,
       };
-      const withoutToday = prevSnapshots.filter((p) => !p.date.startsWith(today));
-      return [...withoutToday, point].sort((a, b) => +new Date(a.date) - +new Date(b.date));
+      const withoutToday = prevSnapshots.filter(
+        (p) => !p.date.startsWith(today)
+      );
+      return [...withoutToday, point].sort(
+        (a, b) => +new Date(a.date) - +new Date(b.date)
+      );
     },
     []
   );
@@ -427,16 +451,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let safety = 0;
       while (hasMore && safety < 50) {
         safety += 1;
-        const response = await plaidProxy.syncItem({ itemID, cursor }, proxyURL, proxyAPIKey);
+        const response = await plaidProxy.syncItem(
+          { itemID, cursor },
+          proxyURL,
+          proxyAPIKey
+        );
 
-        const institution = nextInstitutions.find((i) => i.plaidItemID === itemID);
+        const institution = nextInstitutions.find(
+          (i) => i.plaidItemID === itemID
+        );
         const institutionID = institution?.id ?? itemID;
 
         for (const dto of response.accounts) {
           const mapped = mapAccountDTO(dto, institutionID);
-          const idx = nextAccounts.findIndex((a) => a.plaidAccountID === mapped.plaidAccountID);
+          const idx = nextAccounts.findIndex(
+            (a) => a.plaidAccountID === mapped.plaidAccountID
+          );
           if (idx >= 0)
-            nextAccounts[idx] = { ...nextAccounts[idx], ...mapped, id: nextAccounts[idx].id };
+            nextAccounts[idx] = {
+              ...nextAccounts[idx],
+              ...mapped,
+              id: nextAccounts[idx].id,
+            };
           else nextAccounts.push(mapped);
         }
 
@@ -489,7 +525,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await saveCursors(cursors);
 
       nextInstitutions = nextInstitutions.map((i) =>
-        i.plaidItemID === itemID ? { ...i, lastSyncedAt: new Date().toISOString() } : i
+        i.plaidItemID === itemID
+          ? { ...i, lastSyncedAt: new Date().toISOString() }
+          : i
       );
 
       return { nextInstitutions, nextAccounts, nextTransactions };
@@ -654,15 +692,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!institution) return;
       if (proxyConfigured) {
         try {
-          await plaidProxy.removeItem({ itemID: institution.plaidItemID }, proxyURL, proxyAPIKey);
+          await plaidProxy.removeItem(
+            { itemID: institution.plaidItemID },
+            proxyURL,
+            proxyAPIKey
+          );
         } catch {
           // Still delete local data if proxy remove fails.
         }
       }
-      const nextInstitutions = institutions.filter((i) => i.id !== institutionID);
-      const nextAccounts = accounts.filter((a) => a.institutionID !== institutionID);
+      const nextInstitutions = institutions.filter(
+        (i) => i.id !== institutionID
+      );
+      const nextAccounts = accounts.filter(
+        (a) => a.institutionID !== institutionID
+      );
       const accountIDs = new Set(
-        accounts.filter((a) => a.institutionID === institutionID).map((a) => a.id)
+        accounts
+          .filter((a) => a.institutionID === institutionID)
+          .map((a) => a.id)
       );
       const nextTransactions = transactions.filter(
         (t) => !t.accountID || !accountIDs.has(t.accountID)
@@ -778,7 +826,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addDashboardWidget: (kind) => persistLayout(addWidget(widgets, kind)),
       removeDashboardWidget: (id) => persistLayout(removeWidget(widgets, id)),
       toggleDashboardWidth: (id) => persistLayout(toggleWidth(widgets, id)),
-      relocateDashboardWidget: (id, to) => persistLayout(relocateWidget(widgets, id, to)),
+      relocateDashboardWidget: (id, to) =>
+        persistLayout(relocateWidget(widgets, id, to)),
       previewMove,
       commitLayout,
       resetLayout: () => persistLayout(defaultLayout()),
@@ -804,7 +853,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       openAccount: (id) => router.push(`/account/${id}`),
       getTransaction: (id) => transactions.find((t) => t.id === id),
       getAccount: (id) => accounts.find((a) => a.id === id),
-      toCashFlowInputs: (txns) => mapTxnInputs(txns ?? transactions, categoriesById),
+      toCashFlowInputs: (txns) =>
+        mapTxnInputs(txns ?? transactions, categoriesById),
     }),
     [
       hasAccounts,

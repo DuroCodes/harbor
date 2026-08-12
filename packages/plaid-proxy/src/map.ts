@@ -20,7 +20,9 @@ export const mapAccount = (account: PlaidRawAccount): PlaidAccountDTO => ({
   },
 });
 
-export const mapTransaction = (txn: PlaidRawTransaction): PlaidTransactionDTO => ({
+export const mapTransaction = (
+  txn: PlaidRawTransaction
+): PlaidTransactionDTO => ({
   transactionID: txn.transaction_id,
   accountID: txn.account_id,
   amount: txn.amount,

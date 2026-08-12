@@ -1,6 +1,12 @@
 import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type ViewStyle,
+} from 'react-native';
 
 import { brand, surface } from '@/theme/tokens';
 
@@ -36,7 +42,12 @@ export function GlassButton({
   const content =
     children ??
     (systemImage ? (
-      <SymbolView name={systemImage as any} size={size} tintColor={tint} weight="medium" />
+      <SymbolView
+        name={systemImage as any}
+        size={size}
+        tintColor={tint}
+        weight="medium"
+      />
     ) : null);
 
   const shellStyle = variant === 'icon' ? styles.iconShell : styles.textShell;
@@ -55,7 +66,12 @@ export function GlassButton({
       ]}
     >
       {glass ? (
-        <GlassView glassEffectStyle="regular" colorScheme="dark" isInteractive style={shellStyle}>
+        <GlassView
+          glassEffectStyle="regular"
+          colorScheme="dark"
+          isInteractive
+          style={shellStyle}
+        >
           {content}
         </GlassView>
       ) : (
@@ -87,7 +103,13 @@ export function GlassChrome({
     );
   }
   return (
-    <View style={[shape === 'circle' ? styles.circle : styles.capsule, styles.fallbackFill, style]}>
+    <View
+      style={[
+        shape === 'circle' ? styles.circle : styles.capsule,
+        styles.fallbackFill,
+        style,
+      ]}
+    >
       {children}
     </View>
   );

@@ -13,7 +13,12 @@ export function HeaderBackButton({ onPress }: { onPress: () => void }) {
       accessibilityLabel="Back"
       style={({ pressed }) => [styles.hit, pressed && styles.pressed]}
     >
-      <SymbolView name="chevron.left" size={18} tintColor={brand.accent} weight="semibold" />
+      <SymbolView
+        name="chevron.left"
+        size={18}
+        tintColor={brand.accent}
+        weight="semibold"
+      />
     </Pressable>
   );
 }

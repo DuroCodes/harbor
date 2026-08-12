@@ -1,5 +1,11 @@
 import { Button, Host, HStack, Image, Menu, Text } from '@expo/ui/swift-ui';
-import { background, clipShape, font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  clipShape,
+  font,
+  foregroundStyle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
 import { Platform, View } from 'react-native';
 
 import { brand, surface } from '@/theme/tokens';
@@ -28,11 +34,18 @@ export function ChartMenu({ value, onChange }: Props) {
           ]}
         >
           <Text
-            modifiers={[font({ size: 12, weight: 'medium' }), foregroundStyle(surface.labelMuted)]}
+            modifiers={[
+              font({ size: 12, weight: 'medium' }),
+              foregroundStyle(surface.labelMuted),
+            ]}
           >
             {value === 'sankey' ? 'Sankey' : 'Pie'}
           </Text>
-          <Image systemName="chevron.up.chevron.down" size={10} color={surface.labelMuted} />
+          <Image
+            systemName="chevron.up.chevron.down"
+            size={10}
+            color={surface.labelMuted}
+          />
         </HStack>
       }
     >

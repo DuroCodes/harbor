@@ -86,7 +86,11 @@ export function Settings({ isPresented, onDismiss }: Props) {
             <VStack
               spacing={0}
               modifiers={[
-                frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }),
+                frame({
+                  maxWidth: Infinity,
+                  maxHeight: Infinity,
+                  alignment: 'topLeading',
+                }),
                 background(surface.canvas),
               ]}
             >
@@ -107,7 +111,10 @@ export function Settings({ isPresented, onDismiss }: Props) {
                 <Spacer />
                 <Button
                   label="Done"
-                  modifiers={[buttonStyle('glassProminent'), tint(brand.accent)]}
+                  modifiers={[
+                    buttonStyle('glassProminent'),
+                    tint(brand.accent),
+                  ]}
                   onPress={onDismiss}
                 />
               </HStack>
@@ -186,7 +193,10 @@ export function Settings({ isPresented, onDismiss }: Props) {
                           onIsOnChange={(v) => {
                             void app.setLockBiometricsEnabled(v);
                           }}
-                          modifiers={[tint(brand.accent), listRowBackground(surface.elevated)]}
+                          modifiers={[
+                            tint(brand.accent),
+                            listRowBackground(surface.elevated),
+                          ]}
                         />
                       ) : null}
                       <Button
@@ -201,7 +211,10 @@ export function Settings({ isPresented, onDismiss }: Props) {
                       <Button
                         label="Turn Off App Lock"
                         role="destructive"
-                        modifiers={[buttonStyle('glass'), listRowBackground(surface.elevated)]}
+                        modifiers={[
+                          buttonStyle('glass'),
+                          listRowBackground(surface.elevated),
+                        ]}
                         onPress={() => {
                           void app.clearAppLock();
                         }}
