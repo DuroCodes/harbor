@@ -1,0 +1,81 @@
+diff --git a/build/src/run/ios/XcodeBuild.js b/build/src/run/ios/XcodeBuild.js
+index 5e41d44fd38891b48528dc2513ee8fffc1010207..4e11cd870bda9c944a4e7ff956c107a951a3177f 100644
+--- a/build/src/run/ios/XcodeBuild.js
++++ b/build/src/run/ios/XcodeBuild.js
+@@ -279,8 +279,13 @@ async function getXcodeBuildArgsAsync(props) {
+     if (props.device && (!props.isSimulator || (0, _simulatorCodeSigning.simulatorBuildRequiresCodeSigning)(props.projectRoot))) {
+         const developmentTeamId = await (0, _configureCodeSigning.ensureDeviceIsCodeSignedForDeploymentAsync)(props.projectRoot);
+         if (developmentTeamId) {
+-            args.push(`DEVELOPMENT_TEAM=${developmentTeamId}`, '-allowProvisioningUpdates', '-allowProvisioningDeviceRegistration');
++            args.push(`DEVELOPMENT_TEAM=${developmentTeamId}`);
+         }
++        // Always allow Xcode to create/refresh provisioning profiles. Expo only returns a
++        // developmentTeamId on the first configure pass; subsequent runs see DEVELOPMENT_TEAM
++        // already in the pbxproj and skip these flags — which breaks free Personal Team
++        // installs (profiles expire ~7 days and need -allowProvisioningUpdates to renew).
++        args.push('-allowProvisioningUpdates', '-allowProvisioningDeviceRegistration');
+     }
+     // Add last
+     if (props.buildCache === false) {
+diff --git a/build/src/run/ios/codeSigning/configureCodeSigning.js b/build/src/run/ios/codeSigning/configureCodeSigning.js
+index 43808134d013a056f3e6de2f5398b2a152ecb0ad..af88d3af09bbbaf75ad150d56266145291372e48 100644
+--- a/build/src/run/ios/codeSigning/configureCodeSigning.js
++++ b/build/src/run/ios/codeSigning/configureCodeSigning.js
+@@ -66,36 +66,34 @@ function _interop_require_wildcard(obj, nodeInterop) {
+     return newObj;
+ }
+ async function ensureDeviceIsCodeSignedForDeploymentAsync(projectRoot) {
+-    if (isCodeSigningConfigured(projectRoot)) {
++    const configuredTeamId = getConfiguredDevelopmentTeamId(projectRoot);
++    if (configuredTeamId) {
++        _log.log(_chalk().default.dim`\u203A Auto signing app using team(s): ${configuredTeamId}`);
++        return configuredTeamId;
++    }
++    if (hasManualProvisioningProfiles(projectRoot)) {
++        // Manual signing is already configured; don't override it.
+         return null;
+     }
+     return configureCodeSigningAsync(projectRoot);
+ }
+-function isCodeSigningConfigured(projectRoot) {
++function stripQuotes(value) {
++    return value.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
++}
++function getConfiguredDevelopmentTeamId(projectRoot) {
+     // Check if the app already has a development team defined.
+     const signingInfo = (0, _xcodeCodeSigning.getCodeSigningInfoForPbxproj)(projectRoot);
+-    const allTargetsHaveTeams = Object.values(signingInfo).reduce((prev, curr)=>{
+-        return prev && !!curr.developmentTeams.length;
+-    }, true);
+-    if (allTargetsHaveTeams) {
+-        const teamList = Object.values(signingInfo).reduce((prev, curr)=>{
+-            const team = curr.developmentTeams[0];
+-            return team ? [
+-                ...prev,
+-                team
+-            ] : prev;
+-        }, []);
+-        _log.log(_chalk().default.dim`\u203A Auto signing app using team(s): ${teamList.join(', ')}`);
+-        return true;
+-    }
+-    const allTargetsHaveProfiles = Object.values(signingInfo).reduce((prev, curr)=>{
+-        return prev && !!curr.provisioningProfiles.length;
+-    }, true);
+-    if (allTargetsHaveProfiles) {
+-        // this indicates that the user has manual code signing setup (possibly for production).
+-        return true;
++    const teams = Object.values(signingInfo);
++    if (!teams.length || !teams.every((curr)=>!!curr.developmentTeams.length)) {
++        return null;
+     }
+-    return false;
++    const team = teams[0]?.developmentTeams[0];
++    return team ? stripQuotes(team) : null;
++}
++function hasManualProvisioningProfiles(projectRoot) {
++    const signingInfo = (0, _xcodeCodeSigning.getCodeSigningInfoForPbxproj)(projectRoot);
++    const profiles = Object.values(signingInfo);
++    return !!profiles.length && profiles.every((curr)=>!!curr.provisioningProfiles.length);
+ }
+ async function configureCodeSigningAsync(projectRoot) {
+     const ids = await _Security.findIdentitiesAsync();

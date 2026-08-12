@@ -10,6 +10,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "me.durocodes.harbor",
+      "appleTeamId": "7X7TNR3KQB",
       "icon": "./assets/Harbor.icon",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Harbor uses Face ID to unlock your finances."
@@ -52,6 +53,14 @@
         "expo-local-authentication",
         {
           "faceIDPermission": "Harbor uses Face ID to unlock your finances."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
         }
       ]
     ],

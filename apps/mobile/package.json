@@ -16,10 +16,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@harbor/plaid-proxy": "workspace:*",
     "@expo/ui": "~57.0.10",
+    "@harbor/plaid-proxy": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.12",
+    "expo-build-properties": "~57.0.10",
     "expo-constants": "~57.0.10",
     "expo-crypto": "~57.0.1",
     "expo-dev-client": "~57.0.11",
