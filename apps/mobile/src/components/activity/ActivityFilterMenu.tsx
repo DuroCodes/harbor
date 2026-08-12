@@ -1,4 +1,4 @@
-import { Button, Host, Image, Menu, Section } from '@expo/ui/swift-ui';
+import { Button, Host, Image, Menu } from '@expo/ui/swift-ui';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { brand, surface } from '@/theme/tokens';
@@ -42,6 +42,32 @@ export function ActivityFilterMenu({
   accounts,
 }: Props) {
   const active = activityFiltersActive(filters);
+  const categoryName =
+    filters.categoryID != null
+      ? (categories.find((c) => c.id === filters.categoryID)?.name ??
+        'Category')
+      : 'Category';
+  const accountName =
+    filters.accountID != null
+      ? (() => {
+          const account = accounts.find((a) => a.id === filters.accountID);
+          return account ? accountDisplayName(account) : 'Account';
+        })()
+      : 'Account';
+  const statusName =
+    filters.status === 'pending'
+      ? 'Pending'
+      : filters.status === 'posted'
+        ? 'Posted'
+        : 'Status';
+  const kindName =
+    filters.kind === 'spending'
+      ? 'Spending'
+      : filters.kind === 'income'
+        ? 'Income'
+        : filters.kind === 'transfers'
+          ? 'Transfers'
+          : 'Type';
 
   return (
     <View style={styles.menuWrap} accessibilityLabel="Filter">
@@ -56,7 +82,10 @@ export function ActivityFilterMenu({
             />
           }
         >
-          <Section title="Category">
+          <Menu
+            label={categoryName}
+            systemImage={filters.categoryID != null ? 'checkmark' : 'tag'}
+          >
             <Button
               label="All Categories"
               systemImage={filters.categoryID == null ? 'checkmark' : undefined}
@@ -67,16 +96,19 @@ export function ActivityFilterMenu({
                 key={c.id}
                 label={c.name}
                 systemImage={
-                  (filters.categoryID === c.id
-                    ? 'checkmark'
-                    : c.systemImage) as any
+                  filters.categoryID === c.id ? 'checkmark' : undefined
                 }
                 onPress={() => onChange({ ...filters, categoryID: c.id })}
               />
             ))}
-          </Section>
+          </Menu>
 
-          <Section title="Account">
+          <Menu
+            label={accountName}
+            systemImage={
+              filters.accountID != null ? 'checkmark' : 'building.columns'
+            }
+          >
             <Button
               label="All Accounts"
               systemImage={filters.accountID == null ? 'checkmark' : undefined}
@@ -92,9 +124,12 @@ export function ActivityFilterMenu({
                 onPress={() => onChange({ ...filters, accountID: a.id })}
               />
             ))}
-          </Section>
+          </Menu>
 
-          <Section title="Status">
+          <Menu
+            label={statusName}
+            systemImage={filters.status !== 'all' ? 'checkmark' : 'clock'}
+          >
             <Button
               label="All"
               systemImage={filters.status === 'all' ? 'checkmark' : undefined}
@@ -114,9 +149,14 @@ export function ActivityFilterMenu({
               }
               onPress={() => onChange({ ...filters, status: 'posted' })}
             />
-          </Section>
+          </Menu>
 
-          <Section title="Type">
+          <Menu
+            label={kindName}
+            systemImage={
+              filters.kind !== 'all' ? 'checkmark' : 'arrow.left.arrow.right'
+            }
+          >
             <Button
               label="All"
               systemImage={filters.kind === 'all' ? 'checkmark' : undefined}
@@ -141,7 +181,7 @@ export function ActivityFilterMenu({
               }
               onPress={() => onChange({ ...filters, kind: 'transfers' })}
             />
-          </Section>
+          </Menu>
 
           {active ? (
             <Button
