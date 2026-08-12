@@ -11,3 +11,4 @@ apps/mobile/android
 bun.lock
 *.icon
 apps/mobile/assets
+apps/mobile/CHANGELOG.md
