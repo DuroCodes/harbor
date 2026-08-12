@@ -2,10 +2,10 @@
 
 local-first personal finance. connect your banks with plaid, keep balances and transactions on your device, and glance at net worth, cash flow, budgets, and activity in one place.
 
-|             |                                                                                        |
-| ----------- | -------------------------------------------------------------------------------------- |
-| **android** | install a ready-made apk from [releases](https://github.com/DuroCodes/Harbor/releases) |
-| **ios**     | build yourself — mac + usb (free apple id) or eas cloud (no mac; paid apple developer) |
+| platform | how to install                                                                         |
+| -------- | -------------------------------------------------------------------------------------- |
+| android  | install a ready-made apk from [releases](https://github.com/DuroCodes/Harbor/releases) |
+| ios      | build yourself — mac + usb (free apple id) or eas cloud (no mac; paid apple developer) |
 
 privacy defaults: data stays on device, the plaid secret never ships in the app (a small proxy holds it), and you can lock the app with face id / a passcode.
 
