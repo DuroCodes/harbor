@@ -77,12 +77,16 @@ function HarborRoot() {
       <StatusBar style="light" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: surface.canvas },
           headerShadowVisible: false,
+          headerTransparent: Platform.OS === 'ios',
           headerTintColor: brand.accent,
           headerTitleStyle: { color: surface.label, fontWeight: '600' },
           headerBackTitle: '',
           headerBackButtonDisplayMode: 'minimal',
+          headerStyle:
+            Platform.OS === 'ios'
+              ? { backgroundColor: 'transparent' }
+              : { backgroundColor: surface.canvas },
           contentStyle: { backgroundColor: surface.canvas },
           ...iosScrollEdge,
         }}
