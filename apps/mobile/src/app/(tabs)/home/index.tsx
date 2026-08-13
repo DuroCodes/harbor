@@ -17,7 +17,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WidgetView } from '@/components/board/widgets';
@@ -85,7 +84,6 @@ const destinationIndex = (
 export default function HomeScreen() {
   const app = useApp();
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [draggingID, setDraggingID] = useState<string | null>(null);
@@ -276,13 +274,10 @@ export default function HomeScreen() {
       <View ref={boardRef} style={layout.screen}>
         <ScrollView
           ref={scrollRef}
-          contentInsetAdjustmentBehavior="never"
+          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={[
             layout.screenPadding,
-            {
-              paddingBottom: bottomPad,
-              paddingTop: headerHeight + 8,
-            },
+            { paddingBottom: bottomPad },
           ]}
           showsVerticalScrollIndicator={false}
         >

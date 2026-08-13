@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import { Hairline } from '@/components/ui/Hairline';
-import { HeaderBackButton } from '@/components/ui/HeaderBackButton';
 import { TransactionRow } from '@/components/rows/TransactionRow';
 import { brand, surface, typo } from '@/theme/tokens';
 import { useApp } from '@/context/app';
@@ -25,14 +24,7 @@ export default function AccountDetailScreen() {
   if (!account) {
     return (
       <View style={[styles.screen, styles.center]}>
-        <Stack.Screen
-          options={{
-            title: 'Account',
-            headerLeft: () => (
-              <HeaderBackButton onPress={() => router.back()} />
-            ),
-          }}
-        />
+        <Stack.Screen options={{ title: 'Account' }} />
         <Text style={styles.muted}>Account not found.</Text>
       </View>
     );
@@ -82,12 +74,14 @@ export default function AccountDetailScreen() {
   };
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.screen}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.content}
+    >
       <Stack.Screen
         options={{
           title: ACCOUNT_SUBTYPE_DISPLAY[account.subtype],
-          headerTintColor: brand.accent,
-          headerLeft: () => <HeaderBackButton onPress={() => router.back()} />,
         }}
       />
 

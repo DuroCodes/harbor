@@ -1,12 +1,13 @@
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { LockScreen } from '@/components/security/LockScreen';
 import { Settings } from '@/components/settings/Settings';
 import { brand, surface } from '@/theme/tokens';
+import { stackScreenOptions } from '@/theme/nav';
 import { AppProvider, useApp } from '@/context/app';
 
 export { ErrorBoundary } from 'expo-router';
@@ -27,18 +28,6 @@ const HarborDarkTheme = {
     notification: brand.accent,
   },
 };
-
-const iosScrollEdge =
-  Platform.OS === 'ios'
-    ? {
-        scrollEdgeEffects: {
-          top: 'soft' as const,
-          bottom: 'automatic' as const,
-          left: 'hidden' as const,
-          right: 'hidden' as const,
-        },
-      }
-    : {};
 
 const harborFormSheet = {
   presentation: 'formSheet' as const,
@@ -75,22 +64,7 @@ function HarborRoot() {
   return (
     <ThemeProvider value={HarborDarkTheme}>
       <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShadowVisible: false,
-          headerTransparent: Platform.OS === 'ios',
-          headerTintColor: brand.accent,
-          headerTitleStyle: { color: surface.label, fontWeight: '600' },
-          headerBackTitle: '',
-          headerBackButtonDisplayMode: 'minimal',
-          headerStyle:
-            Platform.OS === 'ios'
-              ? { backgroundColor: 'transparent' }
-              : { backgroundColor: surface.canvas },
-          contentStyle: { backgroundColor: surface.canvas },
-          ...iosScrollEdge,
-        }}
-      >
+      <Stack screenOptions={stackScreenOptions}>
         <Stack.Screen
           name="(tabs)"
           options={{

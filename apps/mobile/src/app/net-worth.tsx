@@ -1,16 +1,14 @@
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NetWorthChart } from '@/components/finance/NetWorthChart';
 import { Card } from '@/components/ui/Card';
-import { HeaderBackButton } from '@/components/ui/HeaderBackButton';
-import { brand, surface, theme, typo } from '@/theme/tokens';
+import { surface, theme, typo } from '@/theme/tokens';
 import { useApp } from '@/context/app';
 import { format } from '@/lib/format';
 
 export default function NetWorthDetailScreen() {
-  const router = useRouter();
   const app = useApp();
   const history = app.netWorthHistory;
 
@@ -41,14 +39,12 @@ export default function NetWorthDetailScreen() {
   }, [history]);
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Stack.Screen
-        options={{
-          title: 'Net Worth',
-          headerTintColor: brand.accent,
-          headerLeft: () => <HeaderBackButton onPress={() => router.back()} />,
-        }}
-      />
+    <ScrollView
+      style={styles.screen}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.content}
+    >
+      <Stack.Screen options={{ title: 'Net Worth' }} />
 
       <View style={styles.hero}>
         <Text style={styles.heroLabel}>Net worth</Text>

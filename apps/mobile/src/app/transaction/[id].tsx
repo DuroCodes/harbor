@@ -1,8 +1,7 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { HeaderBackButton } from '@/components/ui/HeaderBackButton';
 import { brand, surface, typo, theme } from '@/theme/tokens';
 import { useApp } from '@/context/app';
 import { format } from '@/lib/format';
@@ -14,7 +13,6 @@ import {
 
 export default function TransactionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const app = useApp();
   const transaction = app.getTransaction(id);
   const [notes, setNotes] = useState(transaction?.notes ?? '');
@@ -26,14 +24,7 @@ export default function TransactionDetailScreen() {
   if (!transaction) {
     return (
       <View style={[styles.screen, styles.center]}>
-        <Stack.Screen
-          options={{
-            title: 'Transaction',
-            headerLeft: () => (
-              <HeaderBackButton onPress={() => router.back()} />
-            ),
-          }}
-        />
+        <Stack.Screen options={{ title: 'Transaction' }} />
         <Text style={styles.muted}>This transaction could not be found.</Text>
       </View>
     );
@@ -49,14 +40,12 @@ export default function TransactionDetailScreen() {
   const merchant = transactionDisplayMerchant(transaction);
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Stack.Screen
-        options={{
-          title: 'Transaction',
-          headerTintColor: brand.accent,
-          headerLeft: () => <HeaderBackButton onPress={() => router.back()} />,
-        }}
-      />
+    <ScrollView
+      style={styles.screen}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.content}
+    >
+      <Stack.Screen options={{ title: 'Transaction' }} />
 
       <View style={styles.hero}>
         <Text style={styles.heroMerchant} numberOfLines={2}>
