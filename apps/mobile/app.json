@@ -10,10 +10,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "me.durocodes.Harbor",
-      "icon": "./assets/Harbor.icon",
-      "infoPlist": {
-        "NSFaceIDUsageDescription": "Harbor uses Face ID to unlock your finances."
-      }
+      "icon": "./assets/Harbor.icon"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,11 +20,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "me.durocodes.harbor",
-      "permissions": [
-        "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
-      ]
+      "package": "me.durocodes.harbor"
     },
     "web": {
       "bundler": "metro",
@@ -48,12 +41,6 @@
       "expo-status-bar",
       "expo-web-browser",
       "expo-secure-store",
-      [
-        "expo-local-authentication",
-        {
-          "faceIDPermission": "Harbor uses Face ID to unlock your finances."
-        }
-      ],
       [
         "expo-build-properties",
         {

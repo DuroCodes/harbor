@@ -52,9 +52,7 @@ function HarborRoot() {
       <View style={{ flex: 1, backgroundColor: surface.canvas }}>
         <StatusBar style="light" />
         <LockScreen
-          biometricsEnabled={app.lockBiometricsEnabled}
-          biometricsAvailable={app.lockBiometricsAvailable}
-          biometricsName={app.lockBiometricsName}
+          expectedLength={app.lockPasscodeLength}
           onUnlocked={app.unlockApp}
         />
       </View>

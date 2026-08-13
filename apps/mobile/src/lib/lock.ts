@@ -1,14 +1,12 @@
 import * as Crypto from 'expo-crypto';
-import * as LocalAuthentication from 'expo-local-authentication';
 
 import { SecureKeys, secureDelete, secureGet, secureSet } from '@/lib/secure';
 
 export type AppLockSnapshot = {
   hasPasscode: boolean;
-  biometricsEnabled: boolean;
+  /** Stored digit count (4–6). Null for passcodes set before length was persisted. */
+  passcodeLength: number | null;
   isUnlocked: boolean;
-  biometricsAvailable: boolean;
-  biometricsName: string;
 };
 
 const normalize = (passcode: string): string => passcode.replace(/\D/g, '');
@@ -24,40 +22,19 @@ const hashPasscode = (passcode: string): Promise<string> =>
     normalize(passcode)
   );
 
-const biometricsMeta = async (): Promise<{
-  available: boolean;
-  name: string;
-}> => {
-  const hasHardware = await LocalAuthentication.hasHardwareAsync();
-  const enrolled = await LocalAuthentication.isEnrolledAsync();
-  const available = hasHardware && enrolled;
-  const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-  let name = 'Biometrics';
-  if (
-    types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)
-  ) {
-    name = 'Face ID';
-  } else if (
-    types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)
-  ) {
-    name = 'Touch ID';
-  } else if (types.includes(LocalAuthentication.AuthenticationType.IRIS)) {
-    name = 'Optic ID';
-  }
-  return { available, name };
+const parsePasscodeLength = (raw: string | null): number | null => {
+  const n = raw ? Number(raw) : NaN;
+  return n >= 4 && n <= 6 ? n : null;
 };
 
 export const loadAppLockState = async (): Promise<AppLockSnapshot> => {
   const hash = await secureGet(SecureKeys.passcodeHash);
-  const bioFlag = await secureGet(SecureKeys.biometricsEnabled);
-  const { available, name } = await biometricsMeta();
+  const lengthRaw = await secureGet(SecureKeys.passcodeLength);
   const hasPasscode = hash != null && hash.length > 0;
   return {
     hasPasscode,
-    biometricsEnabled: bioFlag === '1',
+    passcodeLength: hasPasscode ? parsePasscodeLength(lengthRaw) : null,
     isUnlocked: !hasPasscode,
-    biometricsAvailable: available,
-    biometricsName: name,
   };
 };
 
@@ -68,19 +45,13 @@ export const setPasscode = async (passcode: string): Promise<void> => {
   }
   const hash = await hashPasscode(digits);
   await secureSet(SecureKeys.passcodeHash, hash);
-  const { available } = await biometricsMeta();
-  if (available) {
-    await secureSet(SecureKeys.biometricsEnabled, '1');
-  }
+  await secureSet(SecureKeys.passcodeLength, String(digits.length));
 };
 
 export const clearPasscode = async (): Promise<void> => {
   await secureDelete(SecureKeys.passcodeHash);
+  await secureDelete(SecureKeys.passcodeLength);
   await secureDelete(SecureKeys.biometricsEnabled);
-};
-
-export const setBiometricsEnabled = async (enabled: boolean): Promise<void> => {
-  await secureSet(SecureKeys.biometricsEnabled, enabled ? '1' : '0');
 };
 
 export const verifyPasscode = async (passcode: string): Promise<boolean> => {
@@ -88,16 +59,4 @@ export const verifyPasscode = async (passcode: string): Promise<boolean> => {
   if (!stored) return false;
   const hash = await hashPasscode(passcode);
   return hash === stored;
-};
-
-export const unlockWithBiometrics = async (): Promise<boolean> => {
-  const { available } = await biometricsMeta();
-  if (!available) return false;
-  const result = await LocalAuthentication.authenticateAsync({
-    promptMessage: 'Unlock to view your finances',
-    fallbackLabel: '',
-    disableDeviceFallback: true,
-    cancelLabel: 'Cancel',
-  });
-  return result.success;
 };

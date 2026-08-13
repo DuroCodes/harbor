@@ -161,6 +161,11 @@ export function PasscodeSheet({
               text={entry}
               placeholder="••••"
               autoFocus
+              maxLength={6}
+              onTextChange={(text) => {
+                const digits = text.replace(/\D/g, '').slice(0, 6);
+                if (digits !== text) entry.value = digits;
+              }}
               modifiers={[
                 keyboardType('numeric'),
                 font({ size: 28, weight: 'medium' }),

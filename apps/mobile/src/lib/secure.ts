@@ -8,6 +8,7 @@ export const SecureKeys = {
   proxyURL: 'harbor.proxy.url',
   proxyAPIKey: 'harbor.proxy.apikey',
   passcodeHash: 'harbor.security.appLockPasscodeHash',
+  passcodeLength: 'harbor.security.appLockPasscodeLength',
   biometricsEnabled: 'harbor.security.appLockBiometricsEnabled',
 } as const;
 

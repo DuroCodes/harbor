@@ -1,7 +1,8 @@
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -10,74 +11,62 @@ import {
 } from 'react-native';
 
 import { brand, surface } from '@/theme/tokens';
-import {
-  isValidPasscode,
-  unlockWithBiometrics,
-  verifyPasscode,
-} from '@/lib/lock';
+import { verifyPasscode } from '@/lib/lock';
 
 type Props = {
-  biometricsEnabled: boolean;
-  biometricsAvailable: boolean;
-  biometricsName: string;
+  /** Digit count of the stored passcode, if known. */
+  expectedLength: number | null;
   onUnlocked: () => void;
 };
 
 /**
- * Launch lock screen — Face ID / Touch ID when enabled, else Harbor passcode.
+ * Launch lock screen — Harbor passcode.
  */
-export function LockScreen({
-  biometricsEnabled,
-  biometricsAvailable,
-  biometricsName,
-  onUnlocked,
-}: Props) {
+export function LockScreen({ expectedLength, onUnlocked }: Props) {
   const [passcode, setPasscode] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showPasscodeEntry, setShowPasscodeEntry] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const attemptId = useRef(0);
+  const maxDigits = expectedLength ?? 6;
 
-  const preferBiometrics = biometricsEnabled && biometricsAvailable;
-
-  useEffect(() => {
-    if (!preferBiometrics) {
-      setShowPasscodeEntry(true);
-      return;
-    }
-    void (async () => {
-      setBusy(true);
-      const ok = await unlockWithBiometrics();
-      setBusy(false);
-      if (ok) onUnlocked();
-      else {
-        setShowPasscodeEntry(true);
-        setErrorMessage('Try your Harbor passcode.');
-      }
-    })();
-  }, []);
-
-  const attemptPasscode = async (value: string) => {
-    const ok = await verifyPasscode(value);
+  const tryPasscode = async (digits: string, showError: boolean) => {
+    const id = ++attemptId.current;
+    const ok = await verifyPasscode(digits);
+    if (id !== attemptId.current) return;
     if (ok) {
       setErrorMessage(null);
       setPasscode('');
       onUnlocked();
-    } else {
+      return;
+    }
+    if (showError) {
       setErrorMessage('Incorrect passcode.');
       setPasscode('');
     }
   };
 
   const onChangePasscode = (raw: string) => {
-    const digits = raw.replace(/\D/g, '').slice(0, 6);
+    const digits = raw.replace(/\D/g, '').slice(0, maxDigits);
     setPasscode(digits);
-    if (isValidPasscode(digits)) {
-      void attemptPasscode(digits);
+    setErrorMessage(null);
+    if (expectedLength) {
+      if (digits.length === expectedLength) void tryPasscode(digits, true);
+      return;
+    }
+    if (digits.length >= 4) {
+      void tryPasscode(digits, digits.length === 6);
     }
   };
 
+  const canSubmit =
+    expectedLength != null
+      ? passcode.length === expectedLength
+      : passcode.length >= 4;
+
   return (
-    <View style={styles.screen}>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <SymbolView
         name="lock"
         size={40}
@@ -87,83 +76,30 @@ export function LockScreen({
       <Text style={styles.title}>Harbor</Text>
       <Text style={styles.subtitle}>Unlock to view your finances</Text>
 
-      {busy && !showPasscodeEntry ? (
-        <ActivityIndicator color={brand.accent} style={{ marginTop: 24 }} />
-      ) : null}
-
-      {showPasscodeEntry || !preferBiometrics ? (
-        <View style={styles.passcodeBlock}>
-          <TextInput
-            value={passcode}
-            onChangeText={onChangePasscode}
-            placeholder="Passcode"
-            placeholderTextColor={surface.labelMuted}
-            keyboardType="number-pad"
-            secureTextEntry
-            textContentType="oneTimeCode"
-            autoFocus
-            style={styles.field}
-          />
-          <Pressable
-            style={[
-              styles.primaryBtn,
-              passcode.length < 4 && styles.btnDisabled,
-            ]}
-            disabled={passcode.length < 4}
-            onPress={() => void attemptPasscode(passcode)}
-          >
-            <Text style={styles.primaryLabel}>Unlock</Text>
-          </Pressable>
-          {preferBiometrics ? (
-            <Pressable
-              onPress={() => {
-                setShowPasscodeEntry(false);
-                setErrorMessage(null);
-                void (async () => {
-                  setBusy(true);
-                  const ok = await unlockWithBiometrics();
-                  setBusy(false);
-                  if (ok) onUnlocked();
-                  else {
-                    setShowPasscodeEntry(true);
-                    setErrorMessage('Try your Harbor passcode.');
-                  }
-                })();
-              }}
-            >
-              <Text style={styles.link}>Use {biometricsName}</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      ) : (
-        <View style={styles.passcodeBlock}>
-          <Pressable
-            style={styles.primaryBtn}
-            onPress={() => {
-              void (async () => {
-                setBusy(true);
-                const ok = await unlockWithBiometrics();
-                setBusy(false);
-                if (ok) onUnlocked();
-                else {
-                  setShowPasscodeEntry(true);
-                  setErrorMessage('Try your Harbor passcode.');
-                }
-              })();
-            }}
-          >
-            <Text style={styles.primaryLabel}>
-              Unlock with {biometricsName}
-            </Text>
-          </Pressable>
-          <Pressable onPress={() => setShowPasscodeEntry(true)}>
-            <Text style={styles.link}>Use Passcode</Text>
-          </Pressable>
-        </View>
-      )}
+      <View style={styles.passcodeBlock}>
+        <TextInput
+          value={passcode}
+          onChangeText={onChangePasscode}
+          placeholder="Passcode"
+          placeholderTextColor={surface.labelMuted}
+          keyboardType="number-pad"
+          secureTextEntry
+          textContentType="oneTimeCode"
+          maxLength={maxDigits}
+          autoFocus
+          style={styles.field}
+        />
+        <Pressable
+          style={[styles.primaryBtn, !canSubmit && styles.btnDisabled]}
+          disabled={!canSubmit}
+          onPress={() => void tryPasscode(passcode, true)}
+        >
+          <Text style={styles.primaryLabel}>Unlock</Text>
+        </Pressable>
+      </View>
 
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -216,12 +152,6 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 17,
     fontWeight: '600',
-  },
-  link: {
-    color: brand.accent,
-    fontSize: 16,
-    fontWeight: '500',
-    marginTop: 4,
   },
   error: {
     marginTop: 16,

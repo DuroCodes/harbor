@@ -10,7 +10,6 @@ import {
   Spacer,
   Text,
   TextField,
-  Toggle,
   useNativeState,
   VStack,
 } from '@expo/ui/swift-ui';
@@ -179,26 +178,13 @@ export function Settings({ isPresented, onDismiss }: Props) {
                   footer={
                     <Text modifiers={[foregroundStyle(surface.labelMuted)]}>
                       {app.lockEnabled
-                        ? `Harbor locks on launch. Use your passcode anytime — ${app.lockBiometricsName} is optional.`
-                        : `Add a 4–6 digit Harbor passcode to lock the app. You can also enable ${app.lockBiometricsName} for faster unlocks.`}
+                        ? 'Harbor locks on launch. Enter your 4–6 digit passcode to unlock.'
+                        : 'Add a 4–6 digit Harbor passcode to lock the app.'}
                     </Text>
                   }
                 >
                   {app.lockEnabled ? (
                     <>
-                      {app.lockBiometricsAvailable ? (
-                        <Toggle
-                          label={`Unlock with ${app.lockBiometricsName}`}
-                          isOn={app.lockBiometricsEnabled}
-                          onIsOnChange={(v) => {
-                            void app.setLockBiometricsEnabled(v);
-                          }}
-                          modifiers={[
-                            tint(brand.accent),
-                            listRowBackground(surface.elevated),
-                          ]}
-                        />
-                      ) : null}
                       <Button
                         label="Change Passcode"
                         modifiers={[

@@ -113,12 +113,9 @@ type AppContextValue = {
   /** App lock — gated at root until unlocked. */
   lockEnabled: boolean;
   lockUnlocked: boolean;
-  lockBiometricsEnabled: boolean;
-  lockBiometricsAvailable: boolean;
-  lockBiometricsName: string;
+  lockPasscodeLength: number | null;
   unlockApp: () => void;
   refreshLockState: (mode?: 'boot' | 'settings') => Promise<void>;
-  setLockBiometricsEnabled: (enabled: boolean) => Promise<void>;
   clearAppLock: () => Promise<void>;
   openConnect: () => void;
   openCashFlow: () => void;
@@ -203,9 +200,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [lockEnabled, setLockEnabled] = useState(false);
   const [lockUnlocked, setLockUnlocked] = useState(true);
-  const [lockBiometricsEnabled, setLockBiometricsFlag] = useState(false);
-  const [lockBiometricsAvailable, setLockBiometricsAvailable] = useState(false);
-  const [lockBiometricsName, setLockBiometricsName] = useState('Biometrics');
+  const [lockPasscodeLength, setLockPasscodeLength] = useState<number | null>(
+    null
+  );
 
   const hasAccounts = accounts.some((a) => a.isActive && !a.isHidden);
   const proxyConfigured = isProxyConfigured(proxyURL, proxyAPIKey);
@@ -215,9 +212,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { loadAppLockState } = await import('@/lib/lock');
       const snap = await loadAppLockState();
       setLockEnabled(snap.hasPasscode);
-      setLockBiometricsFlag(snap.biometricsEnabled);
-      setLockBiometricsAvailable(snap.biometricsAvailable);
-      setLockBiometricsName(snap.biometricsName);
+      setLockPasscodeLength(snap.passcodeLength);
       if (mode === 'boot') {
         setLockUnlocked(snap.isUnlocked);
       } else if (!snap.hasPasscode) {
@@ -231,17 +226,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setLockUnlocked(true);
   }, []);
 
-  const setLockBiometricsEnabled = useCallback(async (enabled: boolean) => {
-    const { setBiometricsEnabled } = await import('@/lib/lock');
-    await setBiometricsEnabled(enabled);
-    setLockBiometricsFlag(enabled);
-  }, []);
-
   const clearAppLock = useCallback(async () => {
     const { clearPasscode } = await import('@/lib/lock');
     await clearPasscode();
     setLockEnabled(false);
-    setLockBiometricsFlag(false);
+    setLockPasscodeLength(null);
     setLockUnlocked(true);
   }, []);
 
@@ -836,12 +825,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       closeSettings: () => setSettingsOpen(false),
       lockEnabled,
       lockUnlocked,
-      lockBiometricsEnabled,
-      lockBiometricsAvailable,
-      lockBiometricsName,
+      lockPasscodeLength,
       unlockApp,
       refreshLockState,
-      setLockBiometricsEnabled,
       clearAppLock,
       openConnect: () => router.push('/connect'),
       openCashFlow: () => router.push('/cash-flow'),
@@ -890,12 +876,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       settingsOpen,
       lockEnabled,
       lockUnlocked,
-      lockBiometricsEnabled,
-      lockBiometricsAvailable,
-      lockBiometricsName,
+      lockPasscodeLength,
       unlockApp,
       refreshLockState,
-      setLockBiometricsEnabled,
       clearAppLock,
     ]
   );
