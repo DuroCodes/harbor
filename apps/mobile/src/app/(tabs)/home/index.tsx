@@ -2,16 +2,7 @@ import { SymbolView } from 'expo-symbols';
 import * as Haptics from 'expo-haptics';
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  LayoutAnimation,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
-} from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -26,6 +17,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { useHeaderHeight } from 'expo-router/react-navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WidgetView } from '@/components/board/widgets';
@@ -38,34 +30,10 @@ import { GlassChrome } from '@/components/ui/GlassButton';
 import { brand, surface, theme, layout } from '@/theme/tokens';
 import { useApp } from '@/context/app';
 
-if (
-  Platform.OS === 'android' &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
 type SlotFrame = { x: number; y: number; width: number; height: number };
 
 const isHalfTile = (item: DashboardWidgetItem) =>
   item.width === 'half' && WIDGET_META[item.kind].allowsHalfWidth;
-
-const animateBoardLayout = () => {
-  LayoutAnimation.configureNext({
-    duration: 220,
-    update: {
-      type: LayoutAnimation.Types.easeInEaseOut,
-    },
-    create: {
-      type: LayoutAnimation.Types.easeInEaseOut,
-      property: LayoutAnimation.Properties.opacity,
-    },
-    delete: {
-      type: LayoutAnimation.Types.easeInEaseOut,
-      property: LayoutAnimation.Properties.opacity,
-    },
-  });
-};
 
 /**
  * Final index (0…n-1) for the dragged widget from finger position — stable for
@@ -117,6 +85,7 @@ const destinationIndex = (
 export default function HomeScreen() {
   const app = useApp();
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddSheet, setShowAddSheet] = useState(false);
   const [draggingID, setDraggingID] = useState<string | null>(null);
@@ -135,6 +104,8 @@ export default function HomeScreen() {
   const draggingIDRef = useRef<string | null>(null);
   const widgetsRef = useRef(app.widgets);
   widgetsRef.current = app.widgets;
+  /** Ignore dest changes until layout catches up after a live move. */
+  const settleUntilRef = useRef(0);
 
   const dragX = useSharedValue(0);
   const dragY = useSharedValue(0);
@@ -207,6 +178,8 @@ export default function HomeScreen() {
       dragY.value =
         absoluteY - grabOffsetRef.current.y - boardOriginRef.current.y;
 
+      if (Date.now() < settleUntilRef.current) return;
+
       const widgets = widgetsRef.current;
       const dest = destinationIndex(
         absoluteX,
@@ -224,7 +197,7 @@ export default function HomeScreen() {
       }
 
       liveIndexRef.current = dest;
-      animateBoardLayout();
+      settleUntilRef.current = Date.now() + 120;
       app.previewMove(id, dest);
       void Haptics.selectionAsync();
     },
@@ -240,12 +213,11 @@ export default function HomeScreen() {
     setDraggingID(null);
   }, [app]);
 
+  // Position with left/top — a transform (or opacity < 1) on an ancestor
+  // kills UIVisualEffectView / liquid glass on the minus button.
   const floatingStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: dragX.value },
-      { translateY: dragY.value },
-      { scale: 1.03 },
-    ],
+    left: dragX.value,
+    top: dragY.value,
   }));
 
   const draggingItem = useMemo(
@@ -304,13 +276,12 @@ export default function HomeScreen() {
       <View ref={boardRef} style={layout.screen}>
         <ScrollView
           ref={scrollRef}
-          contentInsetAdjustmentBehavior="automatic"
+          contentInsetAdjustmentBehavior="never"
           contentContainerStyle={[
             layout.screenPadding,
             {
-              gap: theme.boardRowSpacing,
               paddingBottom: bottomPad,
-              paddingTop: isEditing ? 20 : 12,
+              paddingTop: headerHeight + 8,
             },
           ]}
           showsVerticalScrollIndicator={false}
@@ -325,59 +296,54 @@ export default function HomeScreen() {
               }}
             />
           ) : (
-            app.widgetRows.map((row) => (
-              <View key={row.map((w) => w.id).join('|')} style={styles.row}>
-                {row.map((item) => {
-                  const half = isHalfTile(item);
-                  return (
-                    <View
-                      key={item.id}
-                      ref={(node) => {
-                        if (node) {
-                          reportSlotFrame(item.id, node);
-                        } else {
-                          delete slotRefs.current[item.id];
+            <View style={styles.board}>
+              {app.widgets.map((item) => {
+                const half = isHalfTile(item);
+                return (
+                  <View
+                    key={item.id}
+                    ref={(node) => {
+                      if (node) {
+                        reportSlotFrame(item.id, node);
+                      } else {
+                        delete slotRefs.current[item.id];
+                      }
+                    }}
+                    onLayout={() => {
+                      if (draggingIDRef.current === item.id) return;
+                      const node = slotRefs.current[item.id];
+                      node?.measureInWindow((x, y, width, height) => {
+                        if (width > 0 && height > 0) {
+                          framesRef.current[item.id] = {
+                            x,
+                            y,
+                            width,
+                            height,
+                          };
                         }
-                      }}
-                      onLayout={() => {
-                        const node = slotRefs.current[item.id];
-                        node?.measureInWindow((x, y, width, height) => {
-                          if (width > 0 && height > 0) {
-                            framesRef.current[item.id] = {
-                              x,
-                              y,
-                              width,
-                              height,
-                            };
-                          }
-                        });
-                      }}
-                      style={[
-                        styles.slot,
-                        half ? styles.slotHalf : styles.slotFull,
-                        isEditing && styles.slotEditing,
-                        draggingID === item.id && { opacity: 0.22 },
-                      ]}
-                    >
-                      <WidgetSlot
-                        item={item}
-                        equalHeight={row.length > 1}
-                        isEditing={isEditing}
-                        isDragging={draggingID === item.id}
-                        onRemove={() => app.removeDashboardWidget(item.id)}
-                        onResize={() => app.toggleDashboardWidth(item.id)}
-                        onDragBegin={(ax, ay) => beginDrag(item.id, ax, ay)}
-                        onDragUpdate={(ax, ay) => moveDrag(ax, ay)}
-                        onDragEnd={endDrag}
-                      />
-                    </View>
-                  );
-                })}
-                {row.length === 1 && isHalfTile(row[0]) ? (
-                  <View style={styles.slotHalf} pointerEvents="none" />
-                ) : null}
-              </View>
-            ))
+                      });
+                    }}
+                    style={[
+                      styles.slot,
+                      half ? styles.slotHalf : styles.slotFull,
+                      draggingID === item.id && styles.slotHole,
+                    ]}
+                  >
+                    <WidgetSlot
+                      item={item}
+                      equalHeight={half}
+                      isEditing={isEditing}
+                      isDragging={draggingID === item.id}
+                      onRemove={() => app.removeDashboardWidget(item.id)}
+                      onResize={() => app.toggleDashboardWidth(item.id)}
+                      onDragBegin={(ax, ay) => beginDrag(item.id, ax, ay)}
+                      onDragUpdate={(ax, ay) => moveDrag(ax, ay)}
+                      onDragEnd={endDrag}
+                    />
+                  </View>
+                );
+              })}
+            </View>
           )}
         </ScrollView>
 
@@ -390,11 +356,14 @@ export default function HomeScreen() {
               { width: dragSize.width, height: dragSize.height },
             ]}
           >
-            <WidgetView
-              item={draggingItem}
-              navigationEnabled={false}
-              equalHeight
-            />
+            <View style={styles.floatingLift}>
+              <WidgetView
+                item={draggingItem}
+                navigationEnabled={false}
+                equalHeight
+              />
+            </View>
+            <WidgetEditChrome item={draggingItem} />
           </Animated.View>
         ) : null}
 
@@ -494,44 +463,74 @@ function WidgetSlot({
 
   return (
     <GestureDetector gesture={dragGesture}>
-      <View style={{ flex: equalHeight ? 1 : undefined }}>
-        <Animated.View style={animStyle}>
-          <WidgetView
+      <Animated.View style={[{ flex: equalHeight ? 1 : undefined }, animStyle]}>
+        <WidgetView
+          item={item}
+          navigationEnabled={!isEditing}
+          equalHeight={equalHeight}
+        />
+
+        {isEditing && !isDragging ? (
+          <WidgetEditChrome
             item={item}
-            navigationEnabled={!isEditing}
-            equalHeight={equalHeight}
+            onRemove={onRemove}
+            onResize={onResize}
           />
-        </Animated.View>
-
-        {isEditing ? (
-          <Pressable
-            onPress={onRemove}
-            pointerEvents={isDragging ? 'none' : 'auto'}
-            style={[styles.removeBtn, isDragging && styles.chromeHidden]}
-            accessibilityLabel={`Remove ${WIDGET_META[item.kind].title}`}
-          >
-            <GlassChrome>
-              <View style={styles.removeBar} />
-            </GlassChrome>
-          </Pressable>
         ) : null}
+      </Animated.View>
+    </GestureDetector>
+  );
+}
 
-        {isEditing && WIDGET_META[item.kind].allowsHalfWidth ? (
+function WidgetEditChrome({
+  item,
+  onRemove,
+  onResize,
+}: {
+  item: DashboardWidgetItem;
+  onRemove?: () => void;
+  onResize?: () => void;
+}) {
+  const remove = (
+    <GlassChrome>
+      <View style={styles.removeBar} />
+    </GlassChrome>
+  );
+  const resize = WIDGET_META[item.kind].allowsHalfWidth ? (
+    <GlassChrome shape="capsule" />
+  ) : null;
+
+  return (
+    <>
+      {onRemove ? (
+        <Pressable
+          onPress={onRemove}
+          style={styles.removeBtn}
+          accessibilityLabel={`Remove ${WIDGET_META[item.kind].title}`}
+        >
+          {remove}
+        </Pressable>
+      ) : (
+        <View style={styles.removeBtn}>{remove}</View>
+      )}
+      {resize ? (
+        onResize ? (
           <Pressable
             onPress={onResize}
-            pointerEvents={isDragging ? 'none' : 'auto'}
-            style={[styles.resizeBtn, isDragging && styles.chromeHidden]}
+            style={styles.resizeBtn}
             accessibilityLabel={
               item.width === 'half'
                 ? 'Expand to full width'
                 : 'Shrink to half width'
             }
           >
-            <GlassChrome shape="capsule" />
+            {resize}
           </Pressable>
-        ) : null}
-      </View>
-    </GestureDetector>
+        ) : (
+          <View style={styles.resizeBtn}>{resize}</View>
+        )
+      ) : null}
+    </>
   );
 }
 
@@ -660,55 +659,57 @@ const styles = StyleSheet.create({
     color: brand.accent,
     minWidth: 48,
   },
-  row: {
+  board: {
     flexDirection: 'row',
-    gap: theme.boardColumnSpacing,
-    alignItems: 'stretch',
+    flexWrap: 'wrap',
+    columnGap: theme.boardColumnSpacing,
+    rowGap: theme.boardRowSpacing,
     width: '100%',
+    alignItems: 'stretch',
   },
   slot: {
     position: 'relative',
     overflow: 'hidden',
   },
-  slotEditing: {
-    paddingTop: 12,
-    paddingLeft: 12,
+  slotHole: {
+    opacity: 0,
   },
   /** flexBasis/minWidth 0 — stop chart intrinsic width from blowing half tiles to full row */
   slotHalf: {
     flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    minWidth: 0,
+    flexShrink: 0,
+    flexBasis: '47%',
+    minWidth: '47%',
+    maxWidth: '50%',
   },
   slotFull: {
     width: '100%',
     flexGrow: 0,
     flexShrink: 0,
+    flexBasis: '100%',
   },
   floating: {
     position: 'absolute',
     left: 0,
     top: 0,
     zIndex: 50,
-    opacity: 0.96,
     shadowColor: '#000',
     shadowOpacity: 0.45,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 10 },
   },
+  floatingLift: {
+    transform: [{ scale: 1.03 }],
+  },
   removeBtn: {
     position: 'absolute',
-    top: -2,
-    left: -2,
-    width: 44,
-    height: 44,
+    top: 0,
+    left: 0,
+    width: 28,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
-  },
-  chromeHidden: {
-    opacity: 0,
   },
   removeBar: {
     width: 10,
@@ -718,9 +719,9 @@ const styles = StyleSheet.create({
   },
   resizeBtn: {
     position: 'absolute',
-    right: -4,
-    bottom: -4,
-    padding: 10,
+    right: 4,
+    bottom: 4,
+    padding: 8,
     zIndex: 3,
   },
   prompt: {
