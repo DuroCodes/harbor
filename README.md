@@ -78,7 +78,7 @@ you can also produce an apk without waiting for a release:
 bun install
 cd apps/mobile
 bunx eas-cli login
-bunx eas-cli build --profile sideload --platform android
+bunx eas-cli build --profile sideload --platform android --local
 ```
 
 or run on a device/emulator from source:
@@ -112,17 +112,8 @@ app + proxy setup: [`apps/mobile/README.md`](apps/mobile/README.md) · [`apps/pl
 
 ## releases (maintainers)
 
-merging a [release-please](https://github.com/googleapis/release-please) pr on `main` cuts a github release and attaches a sideload **android apk**. ios artifacts aren't in ci yet (apple developer program required for shareable ipas).
+merging a [release-please](https://github.com/googleapis/release-please) pr on `main` cuts a github release. the apk is built **on github actions** with [`eas build --local`](https://www.expobuilder.app/) (no expo cloud queue) and attached as **`harbor-android.apk`**.
 
-manual apk build: **actions → release → run workflow** (defaults to android).
+manual apk: **actions → release → run workflow**. optional `attach_tag` (e.g. `v0.2.1`) uploads onto an existing release.
 
-one-time expo setup for that pipeline:
-
-```bash
-cd apps/mobile
-bunx eas-cli login
-bunx eas-cli init
-bunx eas-cli credentials   # android signing
-```
-
-add github secret `EXPO_TOKEN` from [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
+one-time: github secret `EXPO_TOKEN` from [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) (used to pull android signing credentials). ios artifacts still aren't in ci.

@@ -68,4 +68,4 @@ bundle id: `me.durocodes.Harbor`
 
 ## releases
 
-versions + changelogs come from [release-please](https://github.com/googleapis/release-please). sideload **android** builds are attached to each release — see the root [`README.md`](../../README.md) for install and build instructions (ios is diy from source for now).
+versions + changelogs come from [release-please](https://github.com/googleapis/release-please). the sideload **android** apk is built on github actions (`eas build --local`) and attached to each release — see the root [`README.md`](../../README.md).
