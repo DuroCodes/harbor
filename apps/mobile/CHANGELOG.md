@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/DuroCodes/harbor/compare/v0.3.0...v0.3.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* remove biometrics and just keep pin ([c7b4985](https://github.com/DuroCodes/harbor/commit/c7b4985d335d1cfcd0d46cd17015b4fb760e992e))
+
 ## [0.3.0](https://github.com/DuroCodes/harbor/compare/v0.2.1...v0.3.0) (2026-08-13)
 
 
