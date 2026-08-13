@@ -1,4 +1,5 @@
-import * as Crypto from 'expo-crypto';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 
 import { SecureKeys, secureDelete, secureGet, secureSet } from '@/lib/secure';
 
@@ -16,11 +17,8 @@ export const isValidPasscode = (passcode: string): boolean => {
   return digits.length >= 4 && digits.length <= 6;
 };
 
-const hashPasscode = (passcode: string): Promise<string> =>
-  Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    normalize(passcode)
-  );
+const hashPasscode = (passcode: string): string =>
+  bytesToHex(sha256(utf8ToBytes(normalize(passcode))));
 
 const parsePasscodeLength = (raw: string | null): number | null => {
   const n = raw ? Number(raw) : NaN;
@@ -43,7 +41,7 @@ export const setPasscode = async (passcode: string): Promise<void> => {
   if (!isValidPasscode(digits)) {
     throw new Error('Passcode must be 4–6 digits.');
   }
-  const hash = await hashPasscode(digits);
+  const hash = hashPasscode(digits);
   await secureSet(SecureKeys.passcodeHash, hash);
   await secureSet(SecureKeys.passcodeLength, String(digits.length));
 };
@@ -57,6 +55,6 @@ export const clearPasscode = async (): Promise<void> => {
 export const verifyPasscode = async (passcode: string): Promise<boolean> => {
   const stored = await secureGet(SecureKeys.passcodeHash);
   if (!stored) return false;
-  const hash = await hashPasscode(passcode);
+  const hash = hashPasscode(passcode);
   return hash === stored;
 };
