@@ -10,7 +10,7 @@
     },
     "apps/mobile": {
       "name": "harbor-mobile",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@expo/ui": "~57.0.10",
         "@harbor/plaid-proxy": "workspace:*",
@@ -70,6 +70,7 @@
   },
   "patchedDependencies": {
     "@expo/cli@57.0.14": "patches/@expo%2Fcli@57.0.14.patch",
+    "react-native-screens@4.26.2": "patches/react-native-screens@4.26.2.patch",
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.5.0", "", {}, "sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q=="],

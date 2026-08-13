@@ -116,8 +116,10 @@ export default function ActivityScreen() {
         contentInsetAdjustmentBehavior="automatic"
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
+        scrollEnabled={filtered.length > 0}
+        bounces={filtered.length > 0}
         contentContainerStyle={
-          filtered.length === 0 ? styles.emptyContainer : { paddingBottom: 24 }
+          filtered.length === 0 ? undefined : styles.listContent
         }
         ListHeaderComponent={
           <ActivityFilterChips
@@ -168,6 +170,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
+  listContent: {
+    paddingBottom: 24,
+  },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -178,13 +183,10 @@ const styles = StyleSheet.create({
     backgroundColor: surface.hairline,
     marginLeft: 56,
   },
-  emptyContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
   empty: {
     alignItems: 'center',
-    padding: 32,
+    paddingHorizontal: 32,
+    paddingTop: 48,
     gap: 8,
   },
   emptyTitle: {
