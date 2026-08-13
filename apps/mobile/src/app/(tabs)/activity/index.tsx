@@ -1,7 +1,14 @@
 import { SymbolView } from 'expo-symbols';
 import { Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import {
   ActivityFilterChips,
@@ -83,21 +90,6 @@ export default function ActivityScreen() {
 
   return (
     <View style={layout.screen}>
-      <Stack.SearchBar
-        placeholder="Search merchant, category, account…"
-        hideWhenScrolling={false}
-        hideNavigationBar={false}
-        obscureBackground={false}
-        placement="stacked"
-        autoCapitalize="none"
-        tintColor={brand.accent}
-        textColor={surface.label}
-        barTintColor={surface.elevated}
-        hintTextColor={surface.labelMuted}
-        headerIconColor={surface.labelMuted}
-        onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-        onCancelButtonPress={() => setSearchText('')}
-      />
       <Stack.Toolbar placement="right" tintColor={brand.accent}>
         <Stack.Toolbar.View>
           <ActivityFilterMenu
@@ -108,6 +100,27 @@ export default function ActivityScreen() {
           />
         </Stack.Toolbar.View>
       </Stack.Toolbar>
+
+      <View style={styles.searchWrap}>
+        <TextInput
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Search merchant, category, account…"
+          placeholderTextColor={surface.labelMuted}
+          style={styles.search}
+          autoCorrect={false}
+          autoCapitalize="none"
+          clearButtonMode="while-editing"
+          returnKeyType="search"
+        />
+      </View>
+
+      <ActivityFilterChips
+        filters={filters}
+        onChange={setFilters}
+        categories={app.categories}
+        accounts={app.accounts}
+      />
 
       <FlatList
         style={styles.list}
@@ -120,14 +133,6 @@ export default function ActivityScreen() {
         bounces={filtered.length > 0}
         contentContainerStyle={
           filtered.length === 0 ? undefined : styles.listContent
-        }
-        ListHeaderComponent={
-          <ActivityFilterChips
-            filters={filters}
-            onChange={setFilters}
-            categories={app.categories}
-            accounts={app.accounts}
-          />
         }
         ItemSeparatorComponent={() => <View style={styles.sep} />}
         ListEmptyComponent={
@@ -167,6 +172,19 @@ export default function ActivityScreen() {
 }
 
 const styles = StyleSheet.create({
+  searchWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 4,
+  },
+  search: {
+    backgroundColor: surface.elevated,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: surface.label,
+    fontSize: 16,
+  },
   list: {
     flex: 1,
   },
