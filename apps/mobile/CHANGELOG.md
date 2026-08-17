@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/DuroCodes/harbor/compare/v0.3.1...v0.3.2) (2026-08-13)
+
+
+### Bug Fixes
+
+* fix issue with pins & remove patches ([2e17b0c](https://github.com/DuroCodes/harbor/commit/2e17b0c8c0ae78ba97505a4a6beaf6d839f681d3))
+* restore search component to stop duplicate cancel buttons ([bc80028](https://github.com/DuroCodes/harbor/commit/bc8002823be9fba4b6d3b7e342df99be5acebd9d))
+
 ## [0.3.1](https://github.com/DuroCodes/harbor/compare/v0.3.0...v0.3.1) (2026-08-13)
 
 
