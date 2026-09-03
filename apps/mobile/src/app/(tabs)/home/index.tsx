@@ -90,9 +90,7 @@ export default function HomeScreen() {
   const [dragSize, setDragSize] = useState({ width: 0, height: 0 });
   const [boardWidth, setBoardWidth] = useState(0);
   const halfSlotWidth =
-    boardWidth > 0
-      ? (boardWidth - theme.boardColumnSpacing) / 2
-      : undefined;
+    boardWidth > 0 ? (boardWidth - theme.boardColumnSpacing) / 2 : undefined;
   const framesRef = useRef<Record<string, SlotFrame>>({});
   const slotRefs = useRef<Record<string, View | null>>({});
   const boardRef = useRef<View>(null);
@@ -474,7 +472,10 @@ function WidgetSlot({
   return (
     <GestureDetector gesture={dragGesture}>
       <Animated.View
-        style={[{ width: '100%', flex: equalHeight ? 1 : undefined }, animStyle]}
+        style={[
+          { width: '100%', flex: equalHeight ? 1 : undefined },
+          animStyle,
+        ]}
       >
         <WidgetView
           item={item}
